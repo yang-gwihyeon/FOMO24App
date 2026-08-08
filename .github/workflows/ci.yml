@@ -22,8 +22,8 @@ jobs:
         with:
           xcode-version: latest-stable
 
-      - name: Tuist 설치
-        run: brew install tuist
+      - name: Tuist·xcbeautify 설치
+        run: brew install tuist xcbeautify
 
       - name: CI용 더미 GoogleService-Info.plist 생성
         run: cp CI/GoogleService-Info.example.plist GoogleService-Info.plist
@@ -41,10 +41,11 @@ jobs:
 
       - name: 시뮬레이터 선택
         id: sim
+        # 이름 매칭은 런타임이 여러 개면 모호성 오류가 나므로 UDID로 지정
         run: |
-          DEVICE=$(xcrun simctl list devices available | grep -m1 -oE 'iPhone [0-9][^(]*' | head -1 | xargs)
-          echo "device=$DEVICE" >> "$GITHUB_OUTPUT"
-          echo "Using simulator: $DEVICE"
+          UDID=$(xcrun simctl list devices available | grep iPhone | grep -m1 -oE '[0-9A-F-]{36}')
+          echo "udid=$UDID" >> "$GITHUB_OUTPUT"
+          xcrun simctl list devices available | grep "$UDID"
 
       - name: 모듈 유닛테스트 (FOMOCore + MarketKit)
         run: |
@@ -52,7 +53,7 @@ jobs:
           xcodebuild test \
             -workspace FOMO24.xcworkspace \
             -scheme Modules \
-            -destination "platform=iOS Simulator,name=${{ steps.sim.outputs.device }}" \
+            -destination "platform=iOS Simulator,id=${{ steps.sim.outputs.udid }}" \
             CODE_SIGNING_ALLOWED=NO | xcbeautify --renderer github-actions
 
       - name: 앱 빌드 (FOMO24 + 위젯)
