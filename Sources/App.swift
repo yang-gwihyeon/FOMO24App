@@ -1,3 +1,5 @@
+import FOMOCore
+import MarketKit
 import SwiftUI
 import SwiftData
 
@@ -23,6 +25,8 @@ struct FOMO24App: App {
 }
 
 /// 켜져 있는(=알림 예약할) 거래소 ID 집합. UserDefaults 기반.
+/// MarketSession.all(메인 액터 격리)을 읽으므로 함께 격리.
+@MainActor
 enum AlertSettings {
     static func openAlertEnabled(_ id: String) -> Bool {
         UserDefaults.standard.bool(forKey: "alertOpen_\(id)")

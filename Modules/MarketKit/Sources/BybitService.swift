@@ -1,10 +1,13 @@
 import Foundation
+import FOMOCore
 
 /// Bybit v5 현물 시세 — xStocks(토큰화 주식, USDT 페어). API 키 불필요.
-struct BybitService: PriceService {
+public struct BybitService: PriceService {
     private let url = URL(string: "https://api.bybit.com/v5/market/tickers?category=spot")!
 
-    func fetchAssets() async throws -> [StockFuture] {
+    public init() {}
+
+    public func fetchAssets() async throws -> [StockFuture] {
         var request = URLRequest(url: url)
         request.timeoutInterval = 15
         let (data, response) = try await URLSession.shared.data(for: request)

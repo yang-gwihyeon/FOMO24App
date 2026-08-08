@@ -40,6 +40,19 @@ struct SelectTickerIntent: WidgetConfigurationIntent {
     var ticker: TickerEntity?
 }
 
+// MARK: - 인터랙티브 새로고침 (iOS 17+)
+
+/// 위젯의 새로고침 버튼 — perform 완료 후 WidgetKit이 타임라인을 다시 로드한다.
+struct RefreshPricesIntent: AppIntent {
+    static let title: LocalizedStringResource = "Refresh Price"
+    static let description = IntentDescription("Reload the latest price.")
+
+    func perform() async throws -> some IntentResult {
+        WidgetCenter.shared.reloadTimelines(ofKind: "PriceWidget")
+        return .result()
+    }
+}
+
 // MARK: - 타임라인
 
 struct PriceEntry: TimelineEntry {
@@ -112,9 +125,18 @@ struct PriceWidgetView: View {
                     .font(.system(size: 22, weight: .bold))
                     .foregroundStyle(.secondary)
             }
-            Text(entry.date, format: .dateTime.hour().minute())
-                .font(.system(size: 9))
-                .foregroundStyle(.tertiary)
+            HStack {
+                Text(entry.date, format: .dateTime.hour().minute())
+                    .font(.system(size: 9))
+                    .foregroundStyle(.tertiary)
+                Spacer()
+                Button(intent: RefreshPricesIntent()) {
+                    Image(systemName: "arrow.clockwise")
+                        .font(.system(size: 10, weight: .semibold))
+                        .foregroundStyle(.secondary)
+                }
+                .buttonStyle(.plain)
+            }
         }
         .containerBackground(for: .widget) {
             Color(uiColor: .systemBackground)

@@ -1,3 +1,5 @@
+import FOMOCore
+import MarketKit
 import SwiftUI
 
 /// 더보기 탭 — 설정 · 시장시계 · 용어사전 · 면책고지 · 정보.

@@ -1,0 +1,65 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test-and-build:
+    name: 모듈 테스트 + 앱 빌드
+    runs-on: macos-15
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Xcode 선택
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
+      - name: Tuist 설치
+        run: brew install tuist
+
+      - name: CI용 더미 GoogleService-Info.plist 생성
+        run: cp CI/GoogleService-Info.example.plist GoogleService-Info.plist
+
+      - name: SPM 캐시
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/Library/Developer/Xcode/DerivedData/**/SourcePackages
+          key: spm-${{ runner.os }}-${{ hashFiles('Project.swift') }}
+          restore-keys: spm-${{ runner.os }}-
+
+      - name: 프로젝트 생성 (tuist generate)
+        run: tuist generate --no-open
+
+      - name: 시뮬레이터 선택
+        id: sim
+        run: |
+          DEVICE=$(xcrun simctl list devices available | grep -m1 -oE 'iPhone [0-9][^(]*' | head -1 | xargs)
+          echo "device=$DEVICE" >> "$GITHUB_OUTPUT"
+          echo "Using simulator: $DEVICE"
+
+      - name: 모듈 유닛테스트 (FOMOCore + MarketKit)
+        run: |
+          set -o pipefail
+          xcodebuild test \
+            -workspace FOMO24.xcworkspace \
+            -scheme Modules \
+            -destination "platform=iOS Simulator,name=${{ steps.sim.outputs.device }}" \
+            CODE_SIGNING_ALLOWED=NO | xcbeautify --renderer github-actions
+
+      - name: 앱 빌드 (FOMO24 + 위젯)
+        run: |
+          set -o pipefail
+          xcodebuild build \
+            -workspace FOMO24.xcworkspace \
+            -scheme FOMO24 \
+            -destination 'generic/platform=iOS Simulator' \
+            CODE_SIGNING_ALLOWED=NO | xcbeautify --renderer github-actions

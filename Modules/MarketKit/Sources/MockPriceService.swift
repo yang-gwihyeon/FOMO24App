@@ -1,8 +1,11 @@
 import Foundation
+import FOMOCore
 
 /// 프리뷰/오프라인 개발용 목업 (가격 + 환율 모두 제공).
-struct MockPriceService: PriceService, FXProvider {
-    func fetchAssets() async throws -> [StockFuture] {
+public struct MockPriceService: PriceService, FXProvider {
+    public init() {}
+
+    public func fetchAssets() async throws -> [StockFuture] {
         let samples: [(String, Double, Double, Double)] = [
             ("NVDA", 209.26, 209.92, 8_500_000),
             ("SMSN", 241.27, 239.13, 1_200_000),
@@ -17,7 +20,7 @@ struct MockPriceService: PriceService, FXProvider {
         }
     }
 
-    func fetchFXRates() async throws -> [String: Double] {
+    public func fetchFXRates() async throws -> [String: Double] {
         ["KRW": 1527.4, "JPY": 161.4, "EUR": 1.1474, "GBP": 1.33]
     }
 }

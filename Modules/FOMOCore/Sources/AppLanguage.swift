@@ -2,13 +2,13 @@ import Foundation
 
 /// 앱 표시 언어. 더보기 탭에서 한국어/영어 선택 (UserDefaults "appLanguage").
 /// .ja는 과거 통화 연동 시절의 잔재 — UI에서는 노출하지 않음.
-enum AppLanguage: String, CaseIterable, Identifiable {
+public enum AppLanguage: String, CaseIterable, Identifiable, Sendable {
     case en, ko, ja
 
-    var id: String { rawValue }
+    public var id: String { rawValue }
 
     /// 저장된 언어 — 뷰 밖(알림 등)에서 사용. 최초 설치 기본값은 영어.
-    static var current: AppLanguage {
+    public static var current: AppLanguage {
         if let saved = UserDefaults.standard.string(forKey: "appLanguage") {
             return saved == "ko" ? .ko : .en
         }
@@ -16,17 +16,17 @@ enum AppLanguage: String, CaseIterable, Identifiable {
     }
 
     /// 한/영 한 쌍을 인라인으로 처리하는 헬퍼. (ja는 en으로)
-    func t(_ ko: String, _ en: String) -> String {
+    public func t(_ ko: String, _ en: String) -> String {
         self == .ko ? ko : en
     }
 
     /// 날짜 포매터용 로케일.
-    var locale: Locale {
+    public var locale: Locale {
         Locale(identifier: self == .ko ? "ko_KR" : "en_US")
     }
 
     /// 거래소 기준 안내 문구
-    var exchangeNote: String {
+    public var exchangeNote: String {
         switch self {
         case .en: return "Hyperliquid Perps"
         case .ko: return "Hyperliquid 무기한 선물 기준"
@@ -34,7 +34,7 @@ enum AppLanguage: String, CaseIterable, Identifiable {
         }
     }
 
-    var change24hLabel: String {
+    public var change24hLabel: String {
         switch self {
         case .en: return "24h change"
         case .ko: return "24h 등락"
@@ -42,7 +42,7 @@ enum AppLanguage: String, CaseIterable, Identifiable {
         }
     }
 
-    var updatedPrefix: String {
+    public var updatedPrefix: String {
         switch self {
         case .en: return "Updated"
         case .ko: return "갱신"
@@ -50,7 +50,7 @@ enum AppLanguage: String, CaseIterable, Identifiable {
         }
     }
 
-    var loadingText: String {
+    public var loadingText: String {
         switch self {
         case .en: return "Loading live futures prices…"
         case .ko: return "실시간 선물 가격을 불러오는 중…"
@@ -60,20 +60,20 @@ enum AppLanguage: String, CaseIterable, Identifiable {
 
     // MARK: FOMO 트래커
 
-    var thenLabel: String {
+    public var thenLabel: String {
         switch self {
         case .en: return "Then"; case .ko: return "그때"; case .ja: return "あの時"
         }
     }
 
-    var nowLabel: String {
+    public var nowLabel: String {
         switch self {
         case .en: return "Now"; case .ko: return "지금"; case .ja: return "今"
         }
     }
 
     /// 올랐을 때(포모) 메시지
-    var fomoMessage: String {
+    public var fomoMessage: String {
         switch self {
         case .en: return "Should've bought it 😭"
         case .ko: return "샀어야 했는데 😭"
@@ -82,7 +82,7 @@ enum AppLanguage: String, CaseIterable, Identifiable {
     }
 
     /// 떨어졌을 때(역포모) 메시지
-    var antiFomoMessage: String {
+    public var antiFomoMessage: String {
         switch self {
         case .en: return "Glad you didn't 😌"
         case .ko: return "안 사길 잘했다 😌"
@@ -90,13 +90,13 @@ enum AppLanguage: String, CaseIterable, Identifiable {
         }
     }
 
-    var fomoTabTitle: String {
+    public var fomoTabTitle: String {
         switch self {
         case .en: return "What-if"; case .ko: return "FOMO"; case .ja: return "FOMO"
         }
     }
 
-    var sortTitle: String {
+    public var sortTitle: String {
         switch self {
         case .en: return "Sort by"
         case .ko: return "정렬 기준"
@@ -104,7 +104,7 @@ enum AppLanguage: String, CaseIterable, Identifiable {
         }
     }
 
-    func marketPulse(openCount: Int) -> String {
+    public func marketPulse(openCount: Int) -> String {
         switch (self, openCount > 0) {
         case (.ko, true):  return "정규장 \(openCount)곳 개장"
         case (.ko, false): return "정규장 전체 마감 · 24H 거래중"
@@ -115,7 +115,7 @@ enum AppLanguage: String, CaseIterable, Identifiable {
         }
     }
 
-    var fomoAddedToast: String {
+    public var fomoAddedToast: String {
         switch self {
         case .en: return "Added to What-if"
         case .ko: return "FOMO에 추가됨"
@@ -123,7 +123,7 @@ enum AppLanguage: String, CaseIterable, Identifiable {
         }
     }
 
-    var fomoEmptyText: String {
+    public var fomoEmptyText: String {
         switch self {
         case .en: return "Record a price you 'almost bought' at.\nWe'll show how much you'd have gained or dodged."
         case .ko: return "'살 뻔했던' 가격을 기록해보세요.\n지금 얼마나 올랐는지(포모) 떨어졌는지(역포모) 보여드려요."

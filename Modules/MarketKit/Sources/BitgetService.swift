@@ -1,10 +1,13 @@
 import Foundation
+import FOMOCore
 
 /// Bitget USDT-margined 주식 선물 시세. API 키 불필요.
-struct BitgetService: PriceService {
+public struct BitgetService: PriceService {
     private let url = URL(string: "https://api.bitget.com/api/v2/mix/market/tickers?productType=usdt-futures")!
 
-    func fetchAssets() async throws -> [StockFuture] {
+    public init() {}
+
+    public func fetchAssets() async throws -> [StockFuture] {
         var request = URLRequest(url: url)
         request.timeoutInterval = 15
         let (data, response) = try await URLSession.shared.data(for: request)

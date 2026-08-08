@@ -1,3 +1,5 @@
+import FOMOCore
+import MarketKit
 import SwiftUI
 
 /// 시장시계 — 오늘 기준 거래소별 휴장 여부·정규장 시간·프리/정규/애프터 세션 + 카운트다운.

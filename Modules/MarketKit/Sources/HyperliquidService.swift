@@ -1,12 +1,15 @@
 import Foundation
+import FOMOCore
 
 /// Hyperliquid info 엔드포인트(`metaAndAssetCtxs`, dex="xyz"). API 키 불필요.
 /// 주식 선물 시세(PriceService) + FX 선물 환율(FXProvider) 모두 제공.
-struct HyperliquidService: PriceService, FXProvider {
+public struct HyperliquidService: PriceService, FXProvider {
     private let endpoint = URL(string: "https://api.hyperliquid.xyz/info")!
     private let dex = "xyz"
 
-    func fetchAssets() async throws -> [StockFuture] {
+    public init() {}
+
+    public func fetchAssets() async throws -> [StockFuture] {
         let byTicker = try await fetchByTicker()
         return Catalog.tracked.compactMap { entry in
             guard let v = byTicker[entry.ticker] else { return nil }
@@ -15,7 +18,7 @@ struct HyperliquidService: PriceService, FXProvider {
         }
     }
 
-    func fetchFXRates() async throws -> [String: Double] {
+    public func fetchFXRates() async throws -> [String: Double] {
         let byTicker = try await fetchByTicker()
         var fx: [String: Double] = [:]
         for currency in Currency.allCases {

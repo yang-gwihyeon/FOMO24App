@@ -1,3 +1,13 @@
+# Firebase 설정 — 실제 키는 커밋 금지 (CI/GoogleService-Info.example.plist 참고)
+/GoogleService-Info.plist
+
+# Tuist 생성물 — tuist generate로 재생성
+/FOMO24.xcodeproj
+/FOMO24.xcworkspace
+/Derived/
+.tuist-bin/
+.tuist-version
+
 # Xcode
 xcuserdata/
 *.xcuserstate

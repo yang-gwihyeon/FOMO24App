@@ -1,3 +1,5 @@
+import FOMOCore
+import MarketKit
 import Foundation
 import ActivityKit
 import Observation
@@ -93,8 +95,10 @@ final class LiveActivityManager {
         if let token = pushTokens.removeValue(forKey: ticker) {
             Firestore.firestore().collection("laTokens").document(token).delete()
         }
-        Task {
-            await activity.end(nil, dismissalPolicy: .immediate)
+        // Activity는 non-Sendable이지만 ActivityKit API는 어느 컨텍스트에서든 호출 가능
+        nonisolated(unsafe) let act = activity
+        Task.detached {
+            await act.end(nil, dismissalPolicy: .immediate)
         }
     }
 
@@ -106,8 +110,10 @@ final class LiveActivityManager {
             let state = PriceActivityAttributes.ContentState(
                 price: quote.usdPrice, changePct: quote.change24h,
                 updatedAt: Date.now.timeIntervalSince1970)
-            Task {
-                await activity.update(.init(state: state, staleDate: Date(timeIntervalSinceNow: 300)))
+            // Activity는 non-Sendable이지만 ActivityKit API는 어느 컨텍스트에서든 호출 가능
+            nonisolated(unsafe) let act = activity
+            Task.detached {
+                await act.update(.init(state: state, staleDate: Date(timeIntervalSinceNow: 300)))
             }
         }
     }

@@ -1,3 +1,5 @@
+import FOMOCore
+import MarketKit
 import SwiftUI
 
 /// 표시 통화 선택 (가로 스크롤 칩).

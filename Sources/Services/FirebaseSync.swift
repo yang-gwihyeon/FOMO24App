@@ -1,3 +1,5 @@
+import FOMOCore
+import MarketKit
 import Foundation
 import UIKit
 import FirebaseCore
@@ -34,9 +36,12 @@ final class FirebaseSync: NSObject, MessagingDelegate {
         sync()
     }
 
-    func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
-        self.fcmToken = fcmToken
-        sync()
+    // FCM 델리게이트는 액터 격리를 보장하지 않아 nonisolated로 받고 메인 액터로 넘긴다.
+    nonisolated func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
+        Task { @MainActor in
+            self.fcmToken = fcmToken
+            self.sync()
+        }
     }
 
     /// 마지막으로 서버에 올렸던 알림 uuid 목록 — 로컬에서 기록이 삭제되면

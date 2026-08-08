@@ -2,28 +2,44 @@ import Foundation
 
 /// 거래소의 오늘 상태(휴장/주말/세션)와 다음 전환 시각을 계산.
 /// 휴장일은 2026년 기준(근사). 서머타임/반일장 등 일부 변동은 미반영.
-struct MarketSession: Identifiable {
+public struct MarketSession: Identifiable, Sendable {
 
-    enum Kind { case pre, regular, post }
+    public enum Kind: Sendable { case pre, regular, post }
 
-    struct Window {
-        let kind: Kind
-        let open: (h: Int, m: Int)
-        let close: (h: Int, m: Int)
+    public struct Window: Sendable {
+        public let kind: Kind
+        public let open: (h: Int, m: Int)
+        public let close: (h: Int, m: Int)
+
+        public init(kind: Kind, open: (h: Int, m: Int), close: (h: Int, m: Int)) {
+            self.kind = kind
+            self.open = open
+            self.close = close
+        }
     }
 
-    let id: String
-    let name: String
-    let flag: String
-    let timeZoneID: String
-    let windows: [Window]                 // open 시각 오름차순
-    let holidays: [String: String]         // "MM-dd" → 휴장명 (2026)
+    public let id: String
+    public let name: String
+    public let flag: String
+    public let timeZoneID: String
+    public let windows: [Window]                 // open 시각 오름차순
+    public let holidays: [String: String]         // "MM-dd" → 휴장명 (2026)
 
-    var regular: Window { windows.first { $0.kind == .regular } ?? windows[0] }
-    var hasExtended: Bool { windows.contains { $0.kind != .regular } }
+    public init(id: String, name: String, flag: String, timeZoneID: String,
+                windows: [Window], holidays: [String: String]) {
+        self.id = id
+        self.name = name
+        self.flag = flag
+        self.timeZoneID = timeZoneID
+        self.windows = windows
+        self.holidays = holidays
+    }
+
+    public var regular: Window { windows.first { $0.kind == .regular } ?? windows[0] }
+    public var hasExtended: Bool { windows.contains { $0.kind != .regular } }
 
     /// 표시 언어에 맞춘 시장 이름. 원격 데이터의 name은 한국어라 영어는 id 매핑으로.
-    func localizedName(_ lang: AppLanguage) -> String {
+    public func localizedName(_ lang: AppLanguage) -> String {
         guard lang != .ko else { return name }
         switch id {
         case "us": return "US (NYSE·NASDAQ)"
@@ -36,8 +52,9 @@ struct MarketSession: Identifiable {
 
     /// 시간대별 캘린더 캐시 — Calendar/TimeZone 생성은 비싸서 매 호출 생성 금지.
     /// (status()는 시장시계에서 1초마다, 캘린더 탭에서 날짜×시장만큼 호출됨)
-    private static var calendarCache: [String: Calendar] = [:]
-    static func calendar(for timeZoneID: String) -> Calendar {
+    /// 가변 캐시라 @MainActor로 격리 — 호출부(뷰·알림 예약)는 모두 메인 액터.
+    @MainActor private static var calendarCache: [String: Calendar] = [:]
+    @MainActor public static func calendar(for timeZoneID: String) -> Calendar {
         if let cached = calendarCache[timeZoneID] { return cached }
         var cal = Calendar(identifier: .gregorian)
         cal.timeZone = TimeZone(identifier: timeZoneID) ?? .current
@@ -46,25 +63,30 @@ struct MarketSession: Identifiable {
     }
 
     /// 이 세션의 현지 캘린더 (캐시).
-    var marketCalendar: Calendar { Self.calendar(for: timeZoneID) }
+    @MainActor public var marketCalendar: Calendar { Self.calendar(for: timeZoneID) }
 
     // MARK: 상태 계산
 
-    enum Phase: Equatable {
+    public enum Phase: Equatable, Sendable {
         case preMarket, regular, afterHours, closed, weekend
         case holiday(String)
 
-        var isTrading: Bool {
+        public var isTrading: Bool {
             switch self { case .preMarket, .regular, .afterHours: return true; default: return false }
         }
     }
 
-    struct Status {
-        let phase: Phase
-        let nextChange: Date
+    public struct Status: Sendable {
+        public let phase: Phase
+        public let nextChange: Date
+
+        public init(phase: Phase, nextChange: Date) {
+            self.phase = phase
+            self.nextChange = nextChange
+        }
     }
 
-    func status(at now: Date) -> Status {
+    @MainActor public func status(at now: Date) -> Status {
         let cal = marketCalendar
 
         if let name = holidayName(on: now, cal: cal) {
@@ -99,7 +121,7 @@ struct MarketSession: Identifiable {
 
     // MARK: 헬퍼
 
-    func holidayName(on date: Date, cal: Calendar) -> String? {
+    public func holidayName(on date: Date, cal: Calendar) -> String? {
         let c = cal.dateComponents([.month, .day], from: date)
         guard let m = c.month, let d = c.day else { return nil }
         return holidays[String(format: "%02d-%02d", m, d)]
@@ -121,7 +143,7 @@ struct MarketSession: Identifiable {
     }
 
     /// 앞으로의 정규장 개장 시각들 (주말·휴장 건너뜀). 알림 예약용.
-    func upcomingRegularOpens(count: Int, from now: Date) -> [Date] {
+    @MainActor public func upcomingRegularOpens(count: Int, from now: Date) -> [Date] {
         let cal = marketCalendar
         var opens: [Date] = []
         // 오늘 개장이 아직 안 지났으면 포함
@@ -155,9 +177,10 @@ struct MarketSession: Identifiable {
 
     /// 현재 사용 중인 세션 목록. 앱 활성화 시 Firestore `config/marketSessions`로 교체됨.
     /// (MarketConfigService.load 참조 — 원격 로드 실패 시 아래 기본값 유지)
-    static var all: [MarketSession] = defaults
+    /// 가변 전역 상태라 @MainActor로 격리.
+    @MainActor public static var all: [MarketSession] = defaults
 
-    static let defaults: [MarketSession] = [
+    public static let defaults: [MarketSession] = [
         MarketSession(
             id: "us", name: "미국 (NYSE·NASDAQ)", flag: "🇺🇸", timeZoneID: "America/New_York",
             windows: [
@@ -218,7 +241,7 @@ struct MarketSession: Identifiable {
 extension MarketSession {
     /// Firestore 문서의 sessions 배열 원소 1개 → MarketSession.
     /// windows의 open/close는 "HH:mm" 문자열 (콘솔에서 수정하기 쉽게).
-    init?(remote: [String: Any]) {
+    public init?(remote: [String: Any]) {
         guard let id = remote["id"] as? String,
               let name = remote["name"] as? String,
               let flag = remote["flag"] as? String,
@@ -244,7 +267,7 @@ extension MarketSession {
 }
 
 extension MarketSession.Kind {
-    init?(remote: String) {
+    public init?(remote: String) {
         switch remote {
         case "pre": self = .pre
         case "regular": self = .regular

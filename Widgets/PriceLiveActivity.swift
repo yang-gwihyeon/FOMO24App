@@ -1,3 +1,4 @@
+import FOMOCore
 import WidgetKit
 import SwiftUI
 import ActivityKit

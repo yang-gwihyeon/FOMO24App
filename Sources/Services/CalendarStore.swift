@@ -1,3 +1,5 @@
+import FOMOCore
+import MarketKit
 import Foundation
 import FirebaseFirestore
 import Observation
@@ -66,6 +68,7 @@ struct CalendarEvent: Identifiable {
 
 /// Firestore `config/calendar`(수동) + `config/calendarAuto`(서버 자동 수집: 실적 등)에서
 /// 이벤트를 내려받고, MarketSession의 휴장일을 자동 병합해 캘린더 탭에 공급.
+@MainActor
 @Observable
 final class CalendarStore {
     static let shared = CalendarStore()

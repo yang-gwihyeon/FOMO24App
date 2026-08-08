@@ -2,17 +2,17 @@ import Foundation
 
 /// 추적 종목: 티커 / 언어별 회사명 / 로고 도메인 / 소스별 심볼.
 /// Hyperliquid `xyz` dex 티커가 기준. Bybit·Bitget은 미국 주식 위주라 없으면 nil.
-enum Catalog {
-    struct Entry {
-        let ticker: String        // Hyperliquid 기준 (예: "NVDA")
-        let domain: String
-        let en: String
-        let ko: String
-        let ja: String
-        let bybit: String?        // Bybit spot 심볼 (예: "NVDAXUSDT")
-        let bitget: String?       // Bitget USDT-futures 심볼 (예: "NVDAUSDT")
+public enum Catalog {
+    public struct Entry: Sendable {
+        public let ticker: String        // Hyperliquid 기준 (예: "NVDA")
+        public let domain: String
+        public let en: String
+        public let ko: String
+        public let ja: String
+        public let bybit: String?        // Bybit spot 심볼 (예: "NVDAXUSDT")
+        public let bitget: String?       // Bitget USDT-futures 심볼 (예: "NVDAUSDT")
 
-        func name(_ language: AppLanguage) -> String {
+        public func name(_ language: AppLanguage) -> String {
             switch language {
             case .en: return en
             case .ko: return ko
@@ -20,7 +20,7 @@ enum Catalog {
             }
         }
 
-        func symbol(for source: DataSource) -> String? {
+        public func symbol(for source: DataSource) -> String? {
             switch source {
             case .hyperliquid:    return ticker
             case .bybit:          return bybit
@@ -29,7 +29,7 @@ enum Catalog {
         }
     }
 
-    static let tracked: [Entry] = [
+    public static let tracked: [Entry] = [
         Entry(ticker: "NVDA",   domain: "nvidia.com",    en: "NVIDIA",        ko: "엔비디아",       ja: "エヌビディア",   bybit: "NVDAXUSDT",  bitget: "NVDAUSDT"),
         Entry(ticker: "SMSN",   domain: "samsung.com",   en: "Samsung Elec.", ko: "삼성전자",       ja: "サムスン電子",   bybit: nil,          bitget: nil),
         Entry(ticker: "SKHX",   domain: "skhynix.com",   en: "SK hynix",      ko: "SK하이닉스",     ja: "SKハイニックス", bybit: nil,          bitget: nil),
@@ -51,18 +51,18 @@ enum Catalog {
 
     private static let byTicker: [String: Entry] = Dictionary(uniqueKeysWithValues: tracked.map { ($0.ticker, $0) })
 
-    static let tickerSet = Set(tracked.map { $0.ticker })
+    public static let tickerSet = Set(tracked.map { $0.ticker })
 
-    static func name(for ticker: String, language: AppLanguage) -> String {
+    public static func name(for ticker: String, language: AppLanguage) -> String {
         byTicker[ticker]?.name(language) ?? ticker
     }
 
-    static func logoURL(for ticker: String) -> URL? {
+    public static func logoURL(for ticker: String) -> URL? {
         guard let domain = byTicker[ticker]?.domain else { return nil }
         return URL(string: "https://www.google.com/s2/favicons?domain=\(domain)&sz=128")
     }
 
-    static func order(of ticker: String) -> Int {
+    public static func order(of ticker: String) -> Int {
         tracked.firstIndex { $0.ticker == ticker } ?? Int.max
     }
 }
