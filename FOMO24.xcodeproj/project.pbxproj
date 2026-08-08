@@ -1,0 +1,755 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		03601C58625D5BC95B6EA3C4 /* StockFuture.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBDAB2BCB0706C9AAF482D9B /* StockFuture.swift */; };
+		09CB34045777CA1C3494A6C2 /* HyperliquidService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6646C6E885CEF0CFD42A7C9E /* HyperliquidService.swift */; };
+		0CB6A78291A19923D09C15AA /* InvestCalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63F6BBF012755B08D08B1FC3 /* InvestCalendarView.swift */; };
+		1146AA3256F6936A2C8A6127 /* Currency.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81D8161AAD00AD0C740647F3 /* Currency.swift */; };
+		19BD0DFA421013D208957A53 /* PriceLiveActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9B052CC635F83E5C555C271 /* PriceLiveActivity.swift */; };
+		2619409679EE61072D223C95 /* PhosphorSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 8E22F81B1C42899D57FC1E1C /* PhosphorSwift */; };
+		2B12B4C9ED395E6315A98454 /* MarketSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FEF142BEE6507E28909544A /* MarketSession.swift */; };
+		30DBEA12D5D0CBE590352E14 /* PriceStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7813E76CE5833CA562167555 /* PriceStore.swift */; };
+		3383892B4E35537BD261C20A /* MoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 281A19F4345EDBD1F3AA7799 /* MoreView.swift */; };
+		344A578F9E0EE0DE8FA3CB89 /* Pretendard-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 99818FB42F90E4FC62676A54 /* Pretendard-Bold.otf */; };
+		39C95F15D2C6546EE370F602 /* PriceWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = D60FA71DB1B6B14EF5791190 /* PriceWidget.swift */; };
+		3D5777515E506A750A485903 /* BinanceService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45C54F5F4CFA756E453CCE77 /* BinanceService.swift */; };
+		5C07BE4EFC429020A7ACE795 /* BitgetService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F11E6624631267FA7554A858 /* BitgetService.swift */; };
+		6682FD7AB4CA4C9C6D3F8B9C /* FomoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D6CB7180AC3D230203110B /* FomoView.swift */; };
+		8327361BA040D8216EE536C2 /* PriceActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BA19EF980480C82ADC7F9DE /* PriceActivityAttributes.swift */; };
+		85F87E449C0463427A64A331 /* FOMO24Widgets.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 554D29383173209D4E420A79 /* FOMO24Widgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		8C7CEE26B258783CB18D2CDB /* MarketConfigService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8323AAE51F2AB74648F62D5B /* MarketConfigService.swift */; };
+		8FE71A851A264E0BAD3EF168 /* WidgetShared.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CA1BFF036CF56B136D5CBA4 /* WidgetShared.swift */; };
+		935131BDCF35BB8361439363 /* PriceActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BA19EF980480C82ADC7F9DE /* PriceActivityAttributes.swift */; };
+		94D00E17E54A70455E636EB8 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2718F666C88CCC7656605503 /* DashboardView.swift */; };
+		98C2937348DE7AE9524464BB /* Catalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E3FC4620C577EE77D7EC349 /* Catalog.swift */; };
+		99813B60C13DFC4A85737CB5 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E8C1C44DE09A10D05BFDCA5 /* Theme.swift */; };
+		999E4BC224D2122A1C9F370F /* App.swift in Sources */ = {isa = PBXBuildFile; fileRef = D66CB26E1C6C1884EE2C24EB /* App.swift */; };
+		9B42FA3C26315ED96EA08C4B /* Pretendard-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = F1948DC59954D9CF8A3DB988 /* Pretendard-Medium.otf */; };
+		A70F8E520A7DAF1CF2000355 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 2A4CF003ACAADA26D4411697 /* FirebaseFirestore */; };
+		A9104CE74CB194DAEA9D048A /* UserCalendarEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D2D1B76B3E3BD39B2EB919D /* UserCalendarEvent.swift */; };
+		ACC9A18C0205528897ABD5C8 /* WidgetsBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 257388A099D2A7688F82DF5B /* WidgetsBundle.swift */; };
+		AF52AA2146FF17BE688DE994 /* PriceRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 321418D937C1124F1FD62B04 /* PriceRowView.swift */; };
+		B1D8D42B7FF6D328601F8A92 /* FirebaseSync.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B29DBB26CFE6C4DD49248E /* FirebaseSync.swift */; };
+		B278D09B3A8642890E4A1807 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AF0FA3DC44A94A593B7A3336 /* Assets.xcassets */; };
+		B35B335EE6DE38DF9FF2B647 /* AppFont.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37D250B7D9E9A4D86070FD30 /* AppFont.swift */; };
+		B7EF764FCF91B5808E5BC0FC /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3A7189B7CA23FC7A95235FFF /* GoogleService-Info.plist */; };
+		C32D8759CEA524DACF74C8B5 /* AppLanguage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9852C5FA2BB6149A30E99BBF /* AppLanguage.swift */; };
+		CC44AC56417AB177037EC326 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = F8A84A15CC4A97B9322793ED /* FirebaseMessaging */; };
+		CC60873E634F6CE8A621B921 /* CalendarStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7081C36298C9BDB88DE277C5 /* CalendarStore.swift */; };
+		E7FE7B674834617678FA5729 /* BybitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C63ABDE246FD08568400DDA0 /* BybitService.swift */; };
+		E8BBC065B7B64379CA0330ED /* CurrencyPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B72E24564A633A5C5985CA9 /* CurrencyPicker.swift */; };
+		EAE9AB4FF85E8727BB54431B /* MockPriceService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10C6EBF0E571BBBEC2B364C /* MockPriceService.swift */; };
+		ECD9215FA43C8CA04C9EED22 /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F12D16D56C83EE33A99603A /* NotificationManager.swift */; };
+		F18CE6DD2170A81D23D1348C /* MarketClockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3A8368CAB58BFBB0CC87711 /* MarketClockView.swift */; };
+		F3C81F3B94C4D031A4721734 /* AddFomoSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB6D6DB31E80426CF5561564 /* AddFomoSheet.swift */; };
+		F8D881BBE440EE53ACC46E98 /* FomoEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E14BF3DCB1D64230807787E /* FomoEntry.swift */; };
+		FA0066369C333F9DE4D74BA8 /* Pretendard-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = D367AFED05712B3E8919B438 /* Pretendard-Regular.otf */; };
+		FB0FE2804250E85658CB9DDD /* PriceService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B7362E0446E952B247743CD /* PriceService.swift */; };
+		FBAC55CDE01CE92019382B3E /* LiveActivityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5710776AAE9E4BE7FE403FBF /* LiveActivityManager.swift */; };
+		FC207092FABE68234BC1C037 /* FomoRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6B73DAA79B215F0BFD205B4 /* FomoRowView.swift */; };
+		FC8047C3831DBBD30E3CE7CB /* Pretendard-SemiBold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 74573C0FE4FCAF0379DE71B5 /* Pretendard-SemiBold.otf */; };
+		FDC315C2296F545E639FFC34 /* Formatters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15B88F5A10CE2917FD01B8E8 /* Formatters.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		E567E6990D21A6E22E937C16 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 228A6E20B66487BABB6FFEDF /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 88F572D7C0C248F014ECFC92;
+			remoteInfo = FOMO24Widgets;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		AFA95C2A225A080D08C09D61 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				85F87E449C0463427A64A331 /* FOMO24Widgets.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		08B29DBB26CFE6C4DD49248E /* FirebaseSync.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseSync.swift; sourceTree = "<group>"; };
+		0E3FC4620C577EE77D7EC349 /* Catalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Catalog.swift; sourceTree = "<group>"; };
+		15B88F5A10CE2917FD01B8E8 /* Formatters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Formatters.swift; sourceTree = "<group>"; };
+		1B72E24564A633A5C5985CA9 /* CurrencyPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyPicker.swift; sourceTree = "<group>"; };
+		2031F39030C4D706F2D94574 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		257388A099D2A7688F82DF5B /* WidgetsBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetsBundle.swift; sourceTree = "<group>"; };
+		2718F666C88CCC7656605503 /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
+		281A19F4345EDBD1F3AA7799 /* MoreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreView.swift; sourceTree = "<group>"; };
+		2BA19EF980480C82ADC7F9DE /* PriceActivityAttributes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceActivityAttributes.swift; sourceTree = "<group>"; };
+		321418D937C1124F1FD62B04 /* PriceRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceRowView.swift; sourceTree = "<group>"; };
+		37D250B7D9E9A4D86070FD30 /* AppFont.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppFont.swift; sourceTree = "<group>"; };
+		3A7189B7CA23FC7A95235FFF /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		3F12D16D56C83EE33A99603A /* NotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationManager.swift; sourceTree = "<group>"; };
+		439ABA89246AAD45AD5DC7E2 /* FOMO24.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = FOMO24.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		45C54F5F4CFA756E453CCE77 /* BinanceService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BinanceService.swift; sourceTree = "<group>"; };
+		554D29383173209D4E420A79 /* FOMO24Widgets.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = FOMO24Widgets.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		5710776AAE9E4BE7FE403FBF /* LiveActivityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveActivityManager.swift; sourceTree = "<group>"; };
+		5B7362E0446E952B247743CD /* PriceService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceService.swift; sourceTree = "<group>"; };
+		5D2D1B76B3E3BD39B2EB919D /* UserCalendarEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserCalendarEvent.swift; sourceTree = "<group>"; };
+		5E14BF3DCB1D64230807787E /* FomoEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FomoEntry.swift; sourceTree = "<group>"; };
+		63F6BBF012755B08D08B1FC3 /* InvestCalendarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvestCalendarView.swift; sourceTree = "<group>"; };
+		6646C6E885CEF0CFD42A7C9E /* HyperliquidService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HyperliquidService.swift; sourceTree = "<group>"; };
+		66D6CB7180AC3D230203110B /* FomoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FomoView.swift; sourceTree = "<group>"; };
+		6E8C1C44DE09A10D05BFDCA5 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
+		7081C36298C9BDB88DE277C5 /* CalendarStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarStore.swift; sourceTree = "<group>"; };
+		74573C0FE4FCAF0379DE71B5 /* Pretendard-SemiBold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Pretendard-SemiBold.otf"; sourceTree = "<group>"; };
+		7813E76CE5833CA562167555 /* PriceStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceStore.swift; sourceTree = "<group>"; };
+		81D8161AAD00AD0C740647F3 /* Currency.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Currency.swift; sourceTree = "<group>"; };
+		8323AAE51F2AB74648F62D5B /* MarketConfigService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketConfigService.swift; sourceTree = "<group>"; };
+		8CA1BFF036CF56B136D5CBA4 /* WidgetShared.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetShared.swift; sourceTree = "<group>"; };
+		8FEF142BEE6507E28909544A /* MarketSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketSession.swift; sourceTree = "<group>"; };
+		9852C5FA2BB6149A30E99BBF /* AppLanguage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLanguage.swift; sourceTree = "<group>"; };
+		99818FB42F90E4FC62676A54 /* Pretendard-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Pretendard-Bold.otf"; sourceTree = "<group>"; };
+		A3A8368CAB58BFBB0CC87711 /* MarketClockView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketClockView.swift; sourceTree = "<group>"; };
+		AB6D6DB31E80426CF5561564 /* AddFomoSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddFomoSheet.swift; sourceTree = "<group>"; };
+		AF0FA3DC44A94A593B7A3336 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		B10C6EBF0E571BBBEC2B364C /* MockPriceService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockPriceService.swift; sourceTree = "<group>"; };
+		C63ABDE246FD08568400DDA0 /* BybitService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BybitService.swift; sourceTree = "<group>"; };
+		D367AFED05712B3E8919B438 /* Pretendard-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Pretendard-Regular.otf"; sourceTree = "<group>"; };
+		D60FA71DB1B6B14EF5791190 /* PriceWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceWidget.swift; sourceTree = "<group>"; };
+		D66CB26E1C6C1884EE2C24EB /* App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App.swift; sourceTree = "<group>"; };
+		D9B052CC635F83E5C555C271 /* PriceLiveActivity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceLiveActivity.swift; sourceTree = "<group>"; };
+		E6B73DAA79B215F0BFD205B4 /* FomoRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FomoRowView.swift; sourceTree = "<group>"; };
+		F11E6624631267FA7554A858 /* BitgetService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitgetService.swift; sourceTree = "<group>"; };
+		F1948DC59954D9CF8A3DB988 /* Pretendard-Medium.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Pretendard-Medium.otf"; sourceTree = "<group>"; };
+		FBDAB2BCB0706C9AAF482D9B /* StockFuture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockFuture.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		837F1C869724103F7289E304 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CC44AC56417AB177037EC326 /* FirebaseMessaging in Frameworks */,
+				A70F8E520A7DAF1CF2000355 /* FirebaseFirestore in Frameworks */,
+				2619409679EE61072D223C95 /* PhosphorSwift in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		0721649E6CD809C593539012 /* Common */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Common;
+			sourceTree = "<group>";
+		};
+		0EAF9A8B536442F9A43E872F /* Calendar */ = {
+			isa = PBXGroup;
+			children = (
+				63F6BBF012755B08D08B1FC3 /* InvestCalendarView.swift */,
+			);
+			path = Calendar;
+			sourceTree = "<group>";
+		};
+		1A46BE2F715F4BC55865A74C /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				99818FB42F90E4FC62676A54 /* Pretendard-Bold.otf */,
+				F1948DC59954D9CF8A3DB988 /* Pretendard-Medium.otf */,
+				D367AFED05712B3E8919B438 /* Pretendard-Regular.otf */,
+				74573C0FE4FCAF0379DE71B5 /* Pretendard-SemiBold.otf */,
+			);
+			path = Fonts;
+			sourceTree = "<group>";
+		};
+		3B5BDE7AE6B9CF14D47C588E /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				D66CB26E1C6C1884EE2C24EB /* App.swift */,
+				DAD8BCC84B6B15F1727BA63C /* Models */,
+				9261D4C288C1E8FF304965D9 /* Services */,
+				F69661D120782A0EBF2D3431 /* ViewModels */,
+				4AC98B27198D56A653526E0B /* Views */,
+			);
+			path = Sources;
+			sourceTree = "<group>";
+		};
+		465D9FBE92BE7C22CD347461 /* Fomo */ = {
+			isa = PBXGroup;
+			children = (
+				AB6D6DB31E80426CF5561564 /* AddFomoSheet.swift */,
+				E6B73DAA79B215F0BFD205B4 /* FomoRowView.swift */,
+				66D6CB7180AC3D230203110B /* FomoView.swift */,
+			);
+			path = Fomo;
+			sourceTree = "<group>";
+		};
+		4AC98B27198D56A653526E0B /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				37D250B7D9E9A4D86070FD30 /* AppFont.swift */,
+				1B72E24564A633A5C5985CA9 /* CurrencyPicker.swift */,
+				2718F666C88CCC7656605503 /* DashboardView.swift */,
+				321418D937C1124F1FD62B04 /* PriceRowView.swift */,
+				6E8C1C44DE09A10D05BFDCA5 /* Theme.swift */,
+				0EAF9A8B536442F9A43E872F /* Calendar */,
+				E6AF8300BA10096F06889A40 /* Clock */,
+				0721649E6CD809C593539012 /* Common */,
+				465D9FBE92BE7C22CD347461 /* Fomo */,
+				D572C748AC2495A527B8B3B8 /* More */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		617C0D5E83FA2EC20170E379 /* Widgets */ = {
+			isa = PBXGroup;
+			children = (
+				2031F39030C4D706F2D94574 /* Info.plist */,
+				D9B052CC635F83E5C555C271 /* PriceLiveActivity.swift */,
+				D60FA71DB1B6B14EF5791190 /* PriceWidget.swift */,
+				257388A099D2A7688F82DF5B /* WidgetsBundle.swift */,
+				8CA1BFF036CF56B136D5CBA4 /* WidgetShared.swift */,
+			);
+			path = Widgets;
+			sourceTree = "<group>";
+		};
+		636269A20D35D68F547991C5 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				AF0FA3DC44A94A593B7A3336 /* Assets.xcassets */,
+				1A46BE2F715F4BC55865A74C /* Fonts */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		9261D4C288C1E8FF304965D9 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				45C54F5F4CFA756E453CCE77 /* BinanceService.swift */,
+				F11E6624631267FA7554A858 /* BitgetService.swift */,
+				C63ABDE246FD08568400DDA0 /* BybitService.swift */,
+				7081C36298C9BDB88DE277C5 /* CalendarStore.swift */,
+				08B29DBB26CFE6C4DD49248E /* FirebaseSync.swift */,
+				6646C6E885CEF0CFD42A7C9E /* HyperliquidService.swift */,
+				5710776AAE9E4BE7FE403FBF /* LiveActivityManager.swift */,
+				8323AAE51F2AB74648F62D5B /* MarketConfigService.swift */,
+				B10C6EBF0E571BBBEC2B364C /* MockPriceService.swift */,
+				3F12D16D56C83EE33A99603A /* NotificationManager.swift */,
+				5B7362E0446E952B247743CD /* PriceService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		A6E6EAA4A42E373C0FD78A3B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				439ABA89246AAD45AD5DC7E2 /* FOMO24.app */,
+				554D29383173209D4E420A79 /* FOMO24Widgets.appex */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		B8C13063258F3A21A3FF962A = {
+			isa = PBXGroup;
+			children = (
+				3A7189B7CA23FC7A95235FFF /* GoogleService-Info.plist */,
+				636269A20D35D68F547991C5 /* Resources */,
+				3B5BDE7AE6B9CF14D47C588E /* Sources */,
+				617C0D5E83FA2EC20170E379 /* Widgets */,
+				A6E6EAA4A42E373C0FD78A3B /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		D572C748AC2495A527B8B3B8 /* More */ = {
+			isa = PBXGroup;
+			children = (
+				281A19F4345EDBD1F3AA7799 /* MoreView.swift */,
+			);
+			path = More;
+			sourceTree = "<group>";
+		};
+		DAD8BCC84B6B15F1727BA63C /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				9852C5FA2BB6149A30E99BBF /* AppLanguage.swift */,
+				0E3FC4620C577EE77D7EC349 /* Catalog.swift */,
+				81D8161AAD00AD0C740647F3 /* Currency.swift */,
+				5E14BF3DCB1D64230807787E /* FomoEntry.swift */,
+				15B88F5A10CE2917FD01B8E8 /* Formatters.swift */,
+				8FEF142BEE6507E28909544A /* MarketSession.swift */,
+				2BA19EF980480C82ADC7F9DE /* PriceActivityAttributes.swift */,
+				FBDAB2BCB0706C9AAF482D9B /* StockFuture.swift */,
+				5D2D1B76B3E3BD39B2EB919D /* UserCalendarEvent.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		E6AF8300BA10096F06889A40 /* Clock */ = {
+			isa = PBXGroup;
+			children = (
+				A3A8368CAB58BFBB0CC87711 /* MarketClockView.swift */,
+			);
+			path = Clock;
+			sourceTree = "<group>";
+		};
+		F69661D120782A0EBF2D3431 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				7813E76CE5833CA562167555 /* PriceStore.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		88F572D7C0C248F014ECFC92 /* FOMO24Widgets */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 32B2A450421DF41FA4061E35 /* Build configuration list for PBXNativeTarget "FOMO24Widgets" */;
+			buildPhases = (
+				403C11C5ADCA29CA3C3E5858 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = FOMO24Widgets;
+			packageProductDependencies = (
+			);
+			productName = FOMO24Widgets;
+			productReference = 554D29383173209D4E420A79 /* FOMO24Widgets.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+		AE00C8F21625D509358A1B22 /* FOMO24 */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0BDB73C918AE2CBDAD6816A3 /* Build configuration list for PBXNativeTarget "FOMO24" */;
+			buildPhases = (
+				51BB129533B94B81E1647E80 /* Sources */,
+				CF1460CB2B1203B94FF9C581 /* Resources */,
+				837F1C869724103F7289E304 /* Frameworks */,
+				AFA95C2A225A080D08C09D61 /* Embed Foundation Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				BD8983527A48E8F9D98C95BE /* PBXTargetDependency */,
+			);
+			name = FOMO24;
+			packageProductDependencies = (
+				F8A84A15CC4A97B9322793ED /* FirebaseMessaging */,
+				2A4CF003ACAADA26D4411697 /* FirebaseFirestore */,
+				8E22F81B1C42899D57FC1E1C /* PhosphorSwift */,
+			);
+			productName = FOMO24;
+			productReference = 439ABA89246AAD45AD5DC7E2 /* FOMO24.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		228A6E20B66487BABB6FFEDF /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					88F572D7C0C248F014ECFC92 = {
+						DevelopmentTeam = 33YSUT6XZ3;
+						ProvisioningStyle = Automatic;
+					};
+					AE00C8F21625D509358A1B22 = {
+						DevelopmentTeam = 33YSUT6XZ3;
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 915AE9F6F31B90A6995E111D /* Build configuration list for PBXProject "FOMO24" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = B8C13063258F3A21A3FF962A;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				6E67EF8C81F6527B49ABEFFD /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				5456A909E2B2FEF04EAB0999 /* XCRemoteSwiftPackageReference "swift" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = A6E6EAA4A42E373C0FD78A3B /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				AE00C8F21625D509358A1B22 /* FOMO24 */,
+				88F572D7C0C248F014ECFC92 /* FOMO24Widgets */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		CF1460CB2B1203B94FF9C581 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B278D09B3A8642890E4A1807 /* Assets.xcassets in Resources */,
+				B7EF764FCF91B5808E5BC0FC /* GoogleService-Info.plist in Resources */,
+				344A578F9E0EE0DE8FA3CB89 /* Pretendard-Bold.otf in Resources */,
+				9B42FA3C26315ED96EA08C4B /* Pretendard-Medium.otf in Resources */,
+				FA0066369C333F9DE4D74BA8 /* Pretendard-Regular.otf in Resources */,
+				FC8047C3831DBBD30E3CE7CB /* Pretendard-SemiBold.otf in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		403C11C5ADCA29CA3C3E5858 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8327361BA040D8216EE536C2 /* PriceActivityAttributes.swift in Sources */,
+				19BD0DFA421013D208957A53 /* PriceLiveActivity.swift in Sources */,
+				39C95F15D2C6546EE370F602 /* PriceWidget.swift in Sources */,
+				8FE71A851A264E0BAD3EF168 /* WidgetShared.swift in Sources */,
+				ACC9A18C0205528897ABD5C8 /* WidgetsBundle.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		51BB129533B94B81E1647E80 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F3C81F3B94C4D031A4721734 /* AddFomoSheet.swift in Sources */,
+				999E4BC224D2122A1C9F370F /* App.swift in Sources */,
+				B35B335EE6DE38DF9FF2B647 /* AppFont.swift in Sources */,
+				C32D8759CEA524DACF74C8B5 /* AppLanguage.swift in Sources */,
+				3D5777515E506A750A485903 /* BinanceService.swift in Sources */,
+				5C07BE4EFC429020A7ACE795 /* BitgetService.swift in Sources */,
+				E7FE7B674834617678FA5729 /* BybitService.swift in Sources */,
+				CC60873E634F6CE8A621B921 /* CalendarStore.swift in Sources */,
+				98C2937348DE7AE9524464BB /* Catalog.swift in Sources */,
+				1146AA3256F6936A2C8A6127 /* Currency.swift in Sources */,
+				E8BBC065B7B64379CA0330ED /* CurrencyPicker.swift in Sources */,
+				94D00E17E54A70455E636EB8 /* DashboardView.swift in Sources */,
+				B1D8D42B7FF6D328601F8A92 /* FirebaseSync.swift in Sources */,
+				F8D881BBE440EE53ACC46E98 /* FomoEntry.swift in Sources */,
+				FC207092FABE68234BC1C037 /* FomoRowView.swift in Sources */,
+				6682FD7AB4CA4C9C6D3F8B9C /* FomoView.swift in Sources */,
+				FDC315C2296F545E639FFC34 /* Formatters.swift in Sources */,
+				09CB34045777CA1C3494A6C2 /* HyperliquidService.swift in Sources */,
+				0CB6A78291A19923D09C15AA /* InvestCalendarView.swift in Sources */,
+				FBAC55CDE01CE92019382B3E /* LiveActivityManager.swift in Sources */,
+				F18CE6DD2170A81D23D1348C /* MarketClockView.swift in Sources */,
+				8C7CEE26B258783CB18D2CDB /* MarketConfigService.swift in Sources */,
+				2B12B4C9ED395E6315A98454 /* MarketSession.swift in Sources */,
+				EAE9AB4FF85E8727BB54431B /* MockPriceService.swift in Sources */,
+				3383892B4E35537BD261C20A /* MoreView.swift in Sources */,
+				ECD9215FA43C8CA04C9EED22 /* NotificationManager.swift in Sources */,
+				935131BDCF35BB8361439363 /* PriceActivityAttributes.swift in Sources */,
+				AF52AA2146FF17BE688DE994 /* PriceRowView.swift in Sources */,
+				FB0FE2804250E85658CB9DDD /* PriceService.swift in Sources */,
+				30DBEA12D5D0CBE590352E14 /* PriceStore.swift in Sources */,
+				03601C58625D5BC95B6EA3C4 /* StockFuture.swift in Sources */,
+				99813B60C13DFC4A85737CB5 /* Theme.swift in Sources */,
+				A9104CE74CB194DAEA9D048A /* UserCalendarEvent.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		BD8983527A48E8F9D98C95BE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 88F572D7C0C248F014ECFC92 /* FOMO24Widgets */;
+			targetProxy = E567E6990D21A6E22E937C16 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		0D7F3F8749F64C18BF5DEC24 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		B34DA8E36E9B6853E53B179E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		B85CACBA470ACBE583535F5B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = FOMO24.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 4;
+				DEVELOPMENT_TEAM = 33YSUT6XZ3;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				INFOPLIST_FILE = Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.yang.FOMO24;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		C67B7F993260E90174DE52CE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 4;
+				DEVELOPMENT_TEAM = 33YSUT6XZ3;
+				INFOPLIST_FILE = Widgets/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.yang.FOMO24.Widgets;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		EF33F191E827008D2D792BBC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 4;
+				DEVELOPMENT_TEAM = 33YSUT6XZ3;
+				INFOPLIST_FILE = Widgets/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.yang.FOMO24.Widgets;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		F589D6AE8E142ABF0B1C5DA7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = FOMO24.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 4;
+				DEVELOPMENT_TEAM = 33YSUT6XZ3;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				INFOPLIST_FILE = Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.yang.FOMO24;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		0BDB73C918AE2CBDAD6816A3 /* Build configuration list for PBXNativeTarget "FOMO24" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F589D6AE8E142ABF0B1C5DA7 /* Debug */,
+				B85CACBA470ACBE583535F5B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		32B2A450421DF41FA4061E35 /* Build configuration list for PBXNativeTarget "FOMO24Widgets" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EF33F191E827008D2D792BBC /* Debug */,
+				C67B7F993260E90174DE52CE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		915AE9F6F31B90A6995E111D /* Build configuration list for PBXProject "FOMO24" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0D7F3F8749F64C18BF5DEC24 /* Debug */,
+				B34DA8E36E9B6853E53B179E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		5456A909E2B2FEF04EAB0999 /* XCRemoteSwiftPackageReference "swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/phosphor-icons/swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.0.0;
+			};
+		};
+		6E67EF8C81F6527B49ABEFFD /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 11.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		2A4CF003ACAADA26D4411697 /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 6E67EF8C81F6527B49ABEFFD /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
+		};
+		8E22F81B1C42899D57FC1E1C /* PhosphorSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5456A909E2B2FEF04EAB0999 /* XCRemoteSwiftPackageReference "swift" */;
+			productName = PhosphorSwift;
+		};
+		F8A84A15CC4A97B9322793ED /* FirebaseMessaging */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 6E67EF8C81F6527B49ABEFFD /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseMessaging;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 228A6E20B66487BABB6FFEDF /* Project object */;
+}
