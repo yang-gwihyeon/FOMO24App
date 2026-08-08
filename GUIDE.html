@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FOMO24 — 프로젝트 현대화 가이드</title>
+<style>
+  :root {
+    --bg: #ffffff; --fg: #1a1d21; --muted: #6b7280; --card: #f6f8fa;
+    --border: #e5e7eb; --accent: #3182F6; --up: #F04452;
+    --code-bg: #0d1117; --code-fg: #e6edf3; --ok: #16a34a;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0d1117; --fg: #e6edf3; --muted: #9ca3af; --card: #161b22;
+      --border: #30363d; --accent: #4f95ff; --code-bg: #010409; --ok: #3fb950;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 0; background: var(--bg); color: var(--fg);
+    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", sans-serif;
+    line-height: 1.65;
+  }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 40px 24px 80px; }
+  h1 { font-size: 30px; margin: 0 0 6px; }
+  h2 { font-size: 21px; margin: 48px 0 12px; padding-top: 24px; border-top: 1px solid var(--border); }
+  h3 { font-size: 16px; margin: 24px 0 8px; }
+  p, li { font-size: 15px; }
+  .sub { color: var(--muted); margin: 0 0 24px; }
+  .badges span {
+    display: inline-block; font-size: 12px; font-weight: 600; padding: 3px 10px;
+    border-radius: 999px; background: var(--card); border: 1px solid var(--border); margin: 2px 4px 2px 0;
+  }
+  table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 14px; }
+  th, td { text-align: left; padding: 8px 12px; border: 1px solid var(--border); vertical-align: top; }
+  th { background: var(--card); }
+  code {
+    font-family: "SF Mono", ui-monospace, Menlo, monospace; font-size: 13px;
+    background: var(--card); border: 1px solid var(--border); border-radius: 4px; padding: 1px 5px;
+  }
+  pre {
+    background: var(--code-bg); color: var(--code-fg); padding: 14px 16px;
+    border-radius: 8px; overflow-x: auto; font-size: 13px; line-height: 1.5;
+  }
+  pre code { background: none; border: none; padding: 0; color: inherit; }
+  .tree { font-family: "SF Mono", ui-monospace, Menlo, monospace; font-size: 13px; }
+  .card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+    padding: 14px 18px; margin: 12px 0;
+  }
+  .ok { color: var(--ok); font-weight: 700; }
+  .warn {
+    background: color-mix(in srgb, var(--up) 8%, var(--bg));
+    border: 1px solid color-mix(in srgb, var(--up) 35%, var(--border));
+    border-radius: 10px; padding: 14px 18px; margin: 12px 0;
+  }
+  .muted { color: var(--muted); font-size: 13px; }
+  a { color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>FOMO24 프로젝트 현대화 가이드</h1>
+<p class="sub">2026-08-09 적용 · 한국 iOS 채용 트렌드(모듈화·테스트·Swift 6·CI) 반영판</p>
+
+<div class="badges">
+  <span>Tuist 멀티모듈</span><span>Swift 6 + Strict Concurrency</span>
+  <span>Swift Testing 27개 통과</span><span>GitHub Actions CI</span>
+  <span>인터랙티브 위젯 (App Intents)</span><span>Firebase 키 히스토리 제거</span>
+</div>
+
+<h2>1. 무엇이 바뀌었나 — 한눈에</h2>
+<table>
+  <tr><th>항목</th><th>이전</th><th>이후</th></tr>
+  <tr><td>프로젝트 생성</td><td>XcodeGen (<code>project.yml</code>)</td><td><b>Tuist</b> (<code>Project.swift</code>) — 생성물은 git 미추적</td></tr>
+  <tr><td>구조</td><td>앱 타깃 1개에 전부</td><td><b>FOMOCore / MarketKit / 앱 / 위젯</b> 4-타깃 멀티모듈</td></tr>
+  <tr><td>언어 모드</td><td>Swift 5.9</td><td><b>Swift 6</b> + strict concurrency(complete) 전 타깃</td></tr>
+  <tr><td>테스트</td><td>없음</td><td><b>Swift Testing 27개</b> (FOMOCore 23 + MarketKit 4)</td></tr>
+  <tr><td>CI</td><td>없음</td><td><b>GitHub Actions</b>: push/PR마다 모듈 테스트 + 앱 빌드</td></tr>
+  <tr><td>위젯</td><td>표시 전용</td><td><b>App Intents 새로고침 버튼</b> (iOS 17 인터랙티브 위젯)</td></tr>
+  <tr><td>Firebase 키</td><td>저장소에 커밋됨</td><td>gitignore + <b>git 히스토리에서 완전 제거</b></td></tr>
+</table>
+
+<h2>2. 모듈 구조</h2>
+<pre class="tree">FOMO24App/
+├── Project.swift            ← 프로젝트 정의 (타깃·의존성·스킴, 여기만 수정)
+├── Tuist.swift              ← Tuist 설정
+├── Modules/
+│   ├── FOMOCore/            ← 순수 모델 모듈 (외부 의존성 없음)
+│   │   ├── Sources/         StockFuture · MarketSession · Catalog · Currency
+│   │   │                    AppLanguage · DataSource · Fmt · FomoEntry(SwiftData)
+│   │   │                    UserCalendarEvent · PriceActivityAttributes
+│   │   └── Tests/           MarketSessionTests · ModelTests (23개)
+│   └── MarketKit/           ← 거래소 시세 모듈 (FOMOCore 의존)
+│       ├── Sources/         PriceService 프로토콜 · Hyperliquid/Binance/Bitget/Bybit
+│       │                    MockPriceService · DataSource.makeService()
+│       └── Tests/           MarketKitTests (4개)
+├── Sources/                 ← 앱 타깃 (SwiftUI 뷰 · PriceStore · Firebase 연동)
+├── Widgets/                 ← 위젯 익스텐션 (FOMOCore 링크)
+├── CI/GoogleService-Info.example.plist   ← CI용 더미 (실키 아님)
+└── .github/workflows/ci.yml</pre>
+
+<div class="card">
+<b>의존성 방향</b> — 항상 아래로만 흐릅니다:<br>
+<code>앱(FOMO24)</code> → <code>MarketKit</code> → <code>FOMOCore</code> &nbsp;/&nbsp; <code>위젯</code> → <code>FOMOCore</code><br>
+<span class="muted">FOMOCore는 아무것도 모릅니다(순수 모델). 거래소 API가 바뀌어도 MarketKit만 수정하면 됩니다.
+DataSource enum은 FOMOCore에, 실제 서비스 생성(makeService)은 MarketKit extension에 있는 것이 순환 의존을 끊는 핵심입니다.</span>
+</div>
+
+<h2>3. 일상 개발 워크플로</h2>
+<h3>처음 클론했을 때 / 프로젝트 파일이 없을 때</h3>
+<pre><code># 1. Tuist 설치 (최초 1회)
+brew install tuist
+
+# 2. Firebase 실제 plist 복사 (파이어베이스 콘솔에서 다운로드, git 미추적)
+#    → 프로젝트 루트에 GoogleService-Info.plist 로 저장
+
+# 3. 프로젝트 생성 + Xcode 열기
+tuist generate</code></pre>
+<p><code>FOMO24.xcodeproj</code>/<code>.xcworkspace</code>는 <b>생성물</b>이라 git에 없습니다.
+<code>Project.swift</code>를 고치면 <code>tuist generate</code>로 다시 만드세요.</p>
+
+<h3>파일 추가/삭제</h3>
+<p>타깃 소스는 글롭(<code>Sources/**</code>)으로 잡혀 있어서 <b>폴더에 파일만 추가하고 <code>tuist generate</code></b>를 다시 실행하면 됩니다. Xcode에서 타깃 멤버십을 만질 일이 없습니다.</p>
+
+<h3>빌드 · 테스트 (CLI)</h3>
+<pre><code># 모듈만 빠르게 테스트 (Firebase 컴파일 없이 수 초)
+xcodebuild test -workspace FOMO24.xcworkspace -scheme Modules \
+  -destination 'platform=iOS Simulator,name=iPhone 16 Pro'
+
+# 앱 전체 빌드
+xcodebuild build -workspace FOMO24.xcworkspace -scheme FOMO24 \
+  -destination 'generic/platform=iOS Simulator'</code></pre>
+<p>Xcode에서는 <b>Modules 스킴 선택 후 ⌘U</b>가 가장 빠른 테스트 루프입니다.
+FOMO24 스킴의 ⌘U도 동일한 테스트(FOMOCoreTests + MarketKitTests)를 실행합니다.</p>
+
+<h2>4. 테스트 — 무엇을 어떻게</h2>
+<p>순수 로직만 테스트합니다 (네트워크·UI 없음 → 0.03초에 27개 완료):</p>
+<table>
+  <tr><th>스위트</th><th>검증 내용</th></tr>
+  <tr><td><code>MarketSessionTests</code></td><td>정규장/프리마켓/주말/휴장일 판정, 다음 개장일이 주말·휴장 건너뛰는지, Firestore 원격 파싱(잘못된 시각 거부 포함)</td></tr>
+  <tr><td><code>StockFutureTests</code></td><td>24h 등락률 계산, 전일가 0 가드</td></tr>
+  <tr><td><code>CurrencyTests</code></td><td>통화별 소수 자릿수, 환율 방향(perUSD/perUnit), FX 티커</td></tr>
+  <tr><td><code>CatalogTests</code></td><td>언어별 종목명, 미등록 티커 폴백, 거래소별 심볼 매핑</td></tr>
+  <tr><td><code>AppLanguageTests</code></td><td>한/영 헬퍼, 마켓펄스 복수형</td></tr>
+  <tr><td><code>MarketKitTests</code></td><td>목업 시세·환율 무결성, DataSource→서비스 매핑, 에러 메시지</td></tr>
+</table>
+<p>새 테스트는 <code>Modules/&lt;모듈&gt;/Tests/</code>에 Swift Testing 스타일로 추가하세요:</p>
+<pre><code>import Testing
+@testable import FOMOCore
+
+@Test func 새로운_검증() {
+    #expect(어떤값 == 기대값)
+}</code></pre>
+
+<h2>5. Swift 6 & Strict Concurrency — 지켜야 할 규칙</h2>
+<p>전 타깃이 <code>SWIFT_VERSION 6.0</code> + <code>SWIFT_STRICT_CONCURRENCY complete</code>입니다.
+새 코드를 쓸 때 이 원칙을 따르면 컴파일러가 데이터 레이스를 잡아줍니다:</p>
+<ul>
+  <li><b>전역 가변 상태는 <code>@MainActor</code>로 격리</b> — <code>MarketSession.all</code>, <code>Fmt</code> 포매터 캐시, <code>AlertSettings</code>가 이 패턴입니다.</li>
+  <li><b>모델 값 타입은 <code>Sendable</code> 명시</b> — public 타입은 자동 추론이 안 되므로 <code>StockFuture</code>처럼 직접 선언합니다.</li>
+  <li><b>외부 SDK 델리게이트는 <code>nonisolated</code>로 받고 <code>Task { @MainActor in }</code>으로 홉</b> — <code>FirebaseSync.messaging(_:didReceiveRegistrationToken:)</code> 참고.</li>
+  <li><b>non-Sendable SDK 타입(예: ActivityKit <code>Activity</code>)</b>은 API 자체가 스레드 세이프한 경우에 한해 <code>nonisolated(unsafe)</code> + 주석으로 명시 — <code>LiveActivityManager</code> 참고. 남용 금지.</li>
+</ul>
+<div class="card">
+이번 마이그레이션에서 실제 수정한 곳은 4곳뿐이었습니다:
+<code>FirebaseSync</code>(델리게이트 격리) · <code>CalendarStore</code>(@MainActor 누락) ·
+<code>AlertSettings</code>(격리 상속) · <code>LiveActivityManager</code>(Activity 전송).
+기존 코드가 <code>@MainActor @Observable</code> 패턴을 잘 따르고 있었기 때문입니다.
+</div>
+
+<h2>6. 인터랙티브 위젯 (App Intents)</h2>
+<p>홈 화면 위젯 우하단에 <b>새로고침 버튼(↻)</b>이 생겼습니다.
+탭하면 앱을 열지 않고 위젯 프로세스 안에서 <code>RefreshPricesIntent.perform()</code>이 실행되어 최신 시세로 타임라인을 다시 로드합니다 (iOS 17+ 인터랙티브 위젯).</p>
+<pre><code>// Widgets/PriceWidget.swift
+struct RefreshPricesIntent: AppIntent {
+    static let title: LocalizedStringResource = "Refresh Price"
+    func perform() async throws -> some IntentResult {
+        WidgetCenter.shared.reloadTimelines(ofKind: "PriceWidget")
+        return .result()
+    }
+}
+// 뷰에서: Button(intent: RefreshPricesIntent()) { Image(systemName: "arrow.clockwise") }</code></pre>
+<p class="muted">기존 종목 선택(<code>SelectTickerIntent</code>)도 App Intents 기반이라, 위젯 전체가 AppIntents 표준을 따릅니다.
+시뮬레이터/기기에서 위젯을 다시 추가해야 버튼이 보일 수 있습니다.</p>
+
+<h2>7. CI — GitHub Actions</h2>
+<p><code>.github/workflows/ci.yml</code> — main 푸시와 모든 PR에서 자동 실행:</p>
+<ol>
+  <li>Xcode(latest-stable) 선택 → <code>brew install tuist</code></li>
+  <li><b>CI용 더미 plist 복사</b> — <code>CI/GoogleService-Info.example.plist</code> → 루트 (실키는 저장소에 없으므로)</li>
+  <li>SPM 의존성 캐시 → <code>tuist generate</code></li>
+  <li><b>모듈 유닛테스트</b> (Modules 스킴, 시뮬레이터)</li>
+  <li><b>앱 전체 빌드</b> (서명 없이 시뮬레이터용)</li>
+</ol>
+<p>로컬에서 CI와 동일한 검증을 돌려보려면 위 3장의 CLI 명령 두 개를 순서대로 실행하면 됩니다.</p>
+
+<h2>8. Firebase 키 보안</h2>
+<div class="warn">
+<b>GoogleService-Info.plist는 이제 git에 없습니다</b> — <code>.gitignore</code> 처리 + <code>git filter-branch</code>로
+과거 커밋 히스토리에서도 완전히 제거했습니다. 로컬 파일은 그대로 있어 빌드에는 영향이 없습니다.<br><br>
+<b>주의:</b> 히스토리를 다시 쓴 상태라 원격 반영에는 <b>force push가 1회 필요</b>합니다 (아래 9장).
+새 기기에서 클론하면 Firebase 콘솔에서 plist를 다시 받아 루트에 넣어야 합니다.
+</div>
+
+<h2>9. 남은 수동 단계 (1회성)</h2>
+<ol>
+  <li><b>Force push</b> — 히스토리 재작성 반영:
+    <pre><code>cd ~/Desktop/0404/FOMO24App
+git push --force origin main</code></pre></li>
+  <li><b>공개 전환(선택)</b> — 포트폴리오로 쓰려면 GitHub 저장소 Settings → Change visibility → Public.
+    plist가 히스토리에서 제거된 뒤이므로 안전합니다. 단, Firestore 보안 규칙이 잠겨 있는지 먼저 확인하세요.</li>
+  <li><b>CI 확인</b> — 푸시 후 GitHub 저장소의 Actions 탭에서 첫 워크플로가 초록불인지 확인.</li>
+</ol>
+
+<h2>10. 면접에서 이렇게 설명하세요</h2>
+<ul>
+  <li><b>왜 모듈화?</b> — "도메인(FOMOCore)과 외부 연동(MarketKit)을 분리해 테스트 가능한 경계를 만들었다. 거래소 API 4종이 프로토콜(PriceService) 하나로 추상화되어 있어 목업 주입으로 스토어 로직을 검증한다."</li>
+  <li><b>왜 Tuist?</b> — "프로젝트 파일 충돌 제거 + 타깃 정의를 코드 리뷰 가능한 Swift로 관리. 카카오뱅크·29CM 등이 쓰는 방식과 동일."</li>
+  <li><b>Swift 6 경험</b> — "전역 가변 상태를 @MainActor로 격리하고, SDK 델리게이트 콜백은 nonisolated → 메인 액터 홉으로 처리. 컴파일 타임에 데이터 레이스를 차단했다."</li>
+  <li><b>CI</b> — "실키 없이 빌드되도록 더미 설정 파일 주입 단계를 뒀고, 모듈 테스트(수 초)와 앱 빌드를 분리해 피드백 속도를 챙겼다."</li>
+</ul>
+
+<p class="muted" style="margin-top:48px">FOMO24 · 2026-08-09 · Tuist 4.203 · Xcode 26.4 · iOS 17.0+</p>
+</div>
+</body>
+</html>
