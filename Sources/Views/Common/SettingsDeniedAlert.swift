@@ -35,13 +35,4 @@ extension View {
             lang: lang))
     }
 
-    /// 라이브 액티비티(다이나믹 아일랜드) 꺼짐 안내
-    func liveActivityDeniedAlert(isPresented: Binding<Bool>, lang: AppLanguage) -> some View {
-        modifier(SettingsDeniedAlert(
-            isPresented: isPresented,
-            title: lang.t("실시간 활동이 꺼져 있어요", "Live Activities are off"),
-            message: lang.t("설정 > FOMO24 > 실시간 활동을 켜면 다이나믹 아일랜드로 시세를 추적할 수 있어요.",
-                            "Turn on Live Activities in Settings > FOMO24 to track prices in the Dynamic Island."),
-            lang: lang))
-    }
 }

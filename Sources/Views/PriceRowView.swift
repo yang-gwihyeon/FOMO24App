@@ -11,7 +11,6 @@ struct PriceRowView: View {
     @Environment(\.modelContext) private var context
 
     private var lang: AppLanguage { store.appLanguage }
-    @State private var showLADenied = false   // 라이브 액티비티 꺼짐 안내
     private var quotesForTicker: [DataSource: StockFuture] { store.sources(for: ticker) }
     private var orderedSources: [DataSource] { DataSource.allCases.filter { quotesForTicker[$0] != nil } }
     private var cheapestPrice: Double? { quotesForTicker.values.map(\.usdPrice).min() }
@@ -29,19 +28,21 @@ struct PriceRowView: View {
         .padding(.horizontal, 20)
         .padding(.vertical, 14)
         .contentShape(Rectangle())
-        // 길게 눌러 실시간 추적 시작/중지 (시스템에서 꺼져 있으면 설정 안내)
+        // 길게 눌러 실시간 추적 시작/중지
+        // 미지원 기기·꺼짐 상태에서는 메뉴 자체를 숨김 (App Review 5.6 회신 내용과 일치 — 비기능 UI 미노출)
         .contextMenu {
-            let tracking = LiveActivityManager.shared.isTracking(ticker)
-            Button {
-                Haptics.tap()
-                toggleTracking()
-            } label: {
-                Label(tracking ? lang.t("실시간 추적 중지", "Stop live tracking")
-                               : lang.t("실시간 추적 시작", "Start live tracking"),
-                      systemImage: tracking ? "stop.circle" : "waveform")
+            if LiveActivityManager.shared.isAvailable {
+                let tracking = LiveActivityManager.shared.isTracking(ticker)
+                Button {
+                    Haptics.tap()
+                    toggleTracking()
+                } label: {
+                    Label(tracking ? lang.t("실시간 추적 중지", "Stop live tracking")
+                                   : lang.t("실시간 추적 시작", "Start live tracking"),
+                          systemImage: tracking ? "stop.circle" : "waveform")
+                }
             }
         }
-        .liveActivityDeniedAlert(isPresented: $showLADenied, lang: lang)
     }
 
     // MARK: 종목 헤더
@@ -76,15 +77,11 @@ struct PriceRowView: View {
     /// "눌러도 아무 일 없는 버튼"이 되지 않게 한다.
     @ViewBuilder
     private var trackButton: some View {
-        trackButtonBody
+        if LiveActivityManager.shared.isAvailable { trackButtonBody }
     }
 
-    /// 방송 버튼/메뉴 공용 — 시스템에서 라이브 액티비티가 꺼져 있으면 설정 안내.
+    /// 방송 버튼/메뉴 공용 토글.
     private func toggleTracking() {
-        guard LiveActivityManager.shared.isAvailable else {
-            showLADenied = true
-            return
-        }
         if let quote = store.primary(ticker) {
             LiveActivityManager.shared.toggle(
                 ticker: ticker,
