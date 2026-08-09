@@ -15,6 +15,7 @@ struct AddFomoSheet: View {
     @State private var memo: String = ""
     @State private var alertPctText: String = ""
     @State private var showLimitAlert = false
+    @State private var showNotifDenied = false   // 알림 권한 거부 안내
 
     @Query private var allEntries: [FomoEntry]
 
@@ -98,6 +99,11 @@ struct AddFomoSheet: View {
                 Text(lang.t("이미 \(FomoEntry.maxAlertCount)개 기록에 알림이 켜져 있어요. 다른 기록의 알림을 끄거나, 알림 없이 저장해주세요.",
                             "Alerts are already on for \(FomoEntry.maxAlertCount) entries. Turn one off, or save without an alert."))
             }
+            .notificationDeniedAlert(isPresented: $showNotifDenied, lang: lang)
+            // 권한 안내를 확인하면 시트를 닫는다 (기록 자체는 알림 없이 저장됨)
+            .onChange(of: showNotifDenied) { _, shown in
+                if !shown { dismiss() }
+            }
         }
     }
 
@@ -137,8 +143,15 @@ struct AddFomoSheet: View {
         }
         let entry = FomoEntry(ticker: ticker, savedPriceUSD: price, savedAt: savedAt, memo: memo, alertPct: alertPct)
         context.insert(entry)
-        if alertPct > 0 { Task { await NotificationManager.shared.requestAuthorization() } }
         Haptics.success()
-        dismiss()
+        guard alertPct > 0 else { dismiss(); return }
+        Task {
+            if await NotificationManager.shared.requestAuthorization() {
+                dismiss()
+            } else {
+                entry.alertPct = 0   // 권한 거부 — 알림 없이 기록만 저장하고 안내
+                showNotifDenied = true
+            }
+        }
     }
 }

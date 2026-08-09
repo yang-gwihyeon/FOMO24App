@@ -14,6 +14,7 @@ struct FomoView: View {
     @State private var alertTarget: FomoEntry?      // 알림 % 입력 대상
     @State private var alertInput = ""
     @State private var showLimitAlert = false
+    @State private var showNotifDenied = false      // 알림 권한 거부 안내
 
     private var lang: AppLanguage { store.appLanguage }
 
@@ -28,6 +29,7 @@ struct FomoView: View {
                 }
             }
             .navigationTitle(lang.fomoTabTitle)
+            .notificationDeniedAlert(isPresented: $showNotifDenied, lang: lang)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
@@ -159,7 +161,14 @@ struct FomoView: View {
         Haptics.tap()
         entry.alertPct = pct
         entry.hasAlerted = false   // 재설정하면 다시 1회 발송 가능
-        if pct > 0 { Task { await NotificationManager.shared.requestAuthorization() } }
+        if pct > 0 {
+            Task {
+                if !(await NotificationManager.shared.requestAuthorization()) {
+                    entry.alertPct = 0   // 권한 거부 — 켜진 것처럼 보이지 않게 롤백
+                    showNotifDenied = true
+                }
+            }
+        }
     }
 
     /// 입력된 %를 검증(1% 단위, 최대 개수)하고 적용.

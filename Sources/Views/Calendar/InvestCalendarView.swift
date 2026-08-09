@@ -470,6 +470,7 @@ private struct OpenAlertChip: View {
     let session: MarketSession
     let lang: AppLanguage
     @AppStorage private var on: Bool
+    @State private var showDenied = false   // 알림 권한 거부 안내
 
     init(session: MarketSession, lang: AppLanguage) {
         self.session = session
@@ -490,8 +491,20 @@ private struct OpenAlertChip: View {
     var body: some View {
         Button {
             Haptics.tap()
-            on.toggle()
-            Task { await NotificationManager.shared.rescheduleMarketOpens(enabledIDs: AlertSettings.enabledOpenIDs) }
+            if on {
+                on = false
+                Task { await NotificationManager.shared.rescheduleMarketOpens(enabledIDs: AlertSettings.enabledOpenIDs) }
+            } else {
+                // 권한이 거부되면 켜진 것처럼 보이지 않게 — 안내 후 상태 유지 안 함
+                Task {
+                    if await NotificationManager.shared.requestAuthorization() {
+                        on = true
+                        await NotificationManager.shared.rescheduleMarketOpens(enabledIDs: AlertSettings.enabledOpenIDs)
+                    } else {
+                        showDenied = true
+                    }
+                }
+            }
         } label: {
             HStack(spacing: 4) {
                 Text(session.flag)
@@ -505,5 +518,6 @@ private struct OpenAlertChip: View {
             .foregroundStyle(on ? .white : .secondary)
         }
         .buttonStyle(.plain)
+        .notificationDeniedAlert(isPresented: $showDenied, lang: lang)
     }
 }
