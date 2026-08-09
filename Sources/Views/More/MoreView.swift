@@ -1,6 +1,7 @@
 import FOMOCore
 import MarketKit
 import SwiftUI
+import UIKit
 
 /// 더보기 탭 — 설정 · 시장시계 · 용어사전 · 면책고지 · 정보.
 struct MoreView: View {
@@ -43,6 +44,27 @@ struct MoreView: View {
                                 "Tap the broadcast button in the Markets tab to track one stock live in the Dynamic Island and on the Lock Screen (devices without the Dynamic Island show it on the Lock Screen). Prices refresh every 5 seconds while the app is open, and every 1 minute even when it's closed. One stock at a time; iOS ends it automatically after 8 hours."))
                         .font(.caption)
                         .foregroundStyle(.secondary)
+                    // 사용 불가 상태 안내 — 이유와 켜는 방법을 투명하게 알려준다
+                    if !LiveActivityManager.shared.isAvailable {
+                        VStack(alignment: .leading, spacing: 6) {
+                            Label(lang.t("지금 이 기기에서는 실시간 추적을 사용할 수 없어요",
+                                         "Live Tracking isn't available on this device right now"),
+                                  systemImage: "exclamationmark.triangle.fill")
+                                .font(.footnote.weight(.semibold))
+                                .foregroundStyle(.orange)
+                            Text(lang.t("설정에서 실시간 활동(Live Activities)이 꺼져 있거나, 이 기기가 라이브 액티비티를 지원하지 않는 경우예요. 설정에서 켜면 마켓 탭에 방송 버튼이 나타납니다.",
+                                        "Either Live Activities is turned off in Settings, or this device doesn't support Live Activities. Once enabled in Settings, the broadcast button appears in the Markets tab."))
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                            Button(lang.t("설정 열기", "Open Settings")) {
+                                if let url = URL(string: UIApplication.openSettingsURLString) {
+                                    UIApplication.shared.open(url)
+                                }
+                            }
+                            .font(.footnote.weight(.semibold))
+                        }
+                        .padding(.vertical, 2)
+                    }
                 } header: {
                     Text(lang.t("실시간 추적", "Live Tracking"))
                 }
