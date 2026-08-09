@@ -100,6 +100,8 @@ struct RootTabView: View {
         // 앱이 켜질 때 개장 알림 재예약 + 서버 동기화
         .onChange(of: scenePhase, initial: true) { _, phase in
             if phase == .active {
+                // 백그라운드 사이 시스템이 내린 라이브 액티비티를 앱 상태에 반영
+                LiveActivityManager.shared.restore()
                 Task {
                     // 원격 시장시간(config/marketSessions) 반영 후 알림 재예약
                     await MarketConfigService.load()

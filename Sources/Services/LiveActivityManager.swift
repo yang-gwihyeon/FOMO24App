@@ -25,16 +25,46 @@ final class LiveActivityManager {
         trackedTickers.contains(ticker)
     }
 
-    /// 앱 시작/복귀 시 시스템에 살아있는 액티비티 복원.
+    /// 앱 시작/복귀 시 시스템 상태를 진실로 삼아 동기화.
+    /// 시스템이 내린 액티비티(8시간 한도·사용자 제거·stale 회수)는 앱 상태에서도 제거한다.
     func restore() {
-        for activity in Activity<PriceActivityAttributes>.activities {
-            let ticker = activity.attributes.ticker
-            if activities[ticker] == nil {
-                activities[ticker] = activity
-                syncPushToken(for: activity)
+        let alive = Activity<PriceActivityAttributes>.activities
+            .filter { $0.activityState == .active || $0.activityState == .stale }
+        let aliveByTicker = Dictionary(alive.map { ($0.attributes.ticker, $0) },
+                                       uniquingKeysWith: { a, _ in a })
+        // 시스템에서 사라진 추적은 해제 (+ 서버 푸시 토큰 정리)
+        for ticker in activities.keys where aliveByTicker[ticker] == nil {
+            activities[ticker] = nil
+            if let token = pushTokens.removeValue(forKey: ticker) {
+                Firestore.firestore().collection("laTokens").document(token).delete()
             }
         }
+        // 시스템에는 있는데 앱이 모르는 액티비티는 채택
+        for (ticker, activity) in aliveByTicker where activities[ticker] == nil {
+            activities[ticker] = activity
+            syncPushToken(for: activity)
+            watchState(for: activity)
+        }
         trackedTickers = Set(activities.keys)
+    }
+
+    /// 액티비티가 종료/제거되는 순간 앱 상태에서도 내린다 (앱이 켜져 있을 때 실시간 반영).
+    private func watchState(for activity: Activity<PriceActivityAttributes>) {
+        let ticker = activity.attributes.ticker
+        let id = activity.id
+        Task {
+            for await state in activity.activityStateUpdates {
+                guard state == .ended || state == .dismissed else { continue }
+                // 같은 티커로 새 액티비티가 시작됐을 수 있으니 id가 일치할 때만 제거
+                if self.activities[ticker]?.id == id {
+                    self.activities[ticker] = nil
+                    self.trackedTickers.remove(ticker)
+                    if let token = self.pushTokens.removeValue(forKey: ticker) {
+                        try? await Firestore.firestore().collection("laTokens").document(token).delete()
+                    }
+                }
+            }
+        }
     }
 
     func toggle(ticker: String, name: String, price: Double, changePct: Double) {
@@ -62,6 +92,7 @@ final class LiveActivityManager {
             activities[ticker] = activity
             trackedTickers.insert(ticker)
             syncPushToken(for: activity)
+            watchState(for: activity)
         } catch {
             // 라이브 액티비티 한도 초과 등 — 조용히 무시
         }
