@@ -5,7 +5,7 @@ let teamID = "33YSUT6XZ3"
 let baseSettings: SettingsDictionary = [
     "DEVELOPMENT_TEAM": .string(teamID),
     "CODE_SIGN_STYLE": "Automatic",
-    "MARKETING_VERSION": "1.0",
+    "MARKETING_VERSION": "1.0.1",
     "CURRENT_PROJECT_VERSION": "1",
     "TARGETED_DEVICE_FAMILY": "1,2",
     "SWIFT_VERSION": "6.0",
