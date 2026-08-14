@@ -6,7 +6,7 @@ let baseSettings: SettingsDictionary = [
     "DEVELOPMENT_TEAM": .string(teamID),
     "CODE_SIGN_STYLE": "Automatic",
     "MARKETING_VERSION": "1.0",
-    "CURRENT_PROJECT_VERSION": "4",
+    "CURRENT_PROJECT_VERSION": "5",
     "TARGETED_DEVICE_FAMILY": "1,2",
     "SWIFT_VERSION": "6.0",
     "SWIFT_STRICT_CONCURRENCY": "complete",
