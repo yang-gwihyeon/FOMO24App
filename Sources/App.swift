@@ -56,6 +56,18 @@ struct RootTabView: View {
 
     var body: some View {
         let lang = store.appLanguage
+        // 강제 업데이트 게이트 — Firestore 플래그가 켜지면 앱 전체를 안내 화면으로 잠금
+        Group {
+            if UpdateGate.shared.needsUpdate {
+                ForceUpdateView(storeURL: UpdateGate.shared.storeURL)
+            } else {
+                mainTabs(lang: lang)
+            }
+        }
+        .onAppear { UpdateGate.shared.start() }
+    }
+
+    private func mainTabs(lang: AppLanguage) -> some View {
         TabView(selection: $selectedTab) {
             DashboardView()
                 .tag(0)
@@ -102,6 +114,10 @@ struct RootTabView: View {
             if phase == .active {
                 // 백그라운드 사이 시스템이 내린 라이브 액티비티를 앱 상태에 반영
                 LiveActivityManager.shared.restore()
+                Task {
+                    // 원격 종목 카탈로그(config/catalog) 반영 — 실패 시 내장 목록 유지
+                    await CatalogConfigService.load()
+                }
                 Task {
                     // 원격 시장시간(config/marketSessions) 반영 후 알림 재예약
                     await MarketConfigService.load()

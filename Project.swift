@@ -2,11 +2,15 @@ import ProjectDescription
 
 // 공통 빌드 설정
 let teamID = "33YSUT6XZ3"
+// 릴리즈 CI가 태그에서 버전을 주입: v1.1 푸시 → TUIST_MARKETING_VERSION=1.1,
+// TUIST_BUILD_NUMBER=<GitHub run number>. 로컬 빌드는 아래 기본값 사용.
+let marketingVersion = Environment.marketingVersion.getString(default: "1.1")
+let buildNumber = Environment.buildNumber.getString(default: "5")
 let baseSettings: SettingsDictionary = [
     "DEVELOPMENT_TEAM": .string(teamID),
     "CODE_SIGN_STYLE": "Automatic",
-    "MARKETING_VERSION": "1.0",
-    "CURRENT_PROJECT_VERSION": "5",
+    "MARKETING_VERSION": .string(marketingVersion),
+    "CURRENT_PROJECT_VERSION": .string(buildNumber),
     "TARGETED_DEVICE_FAMILY": "1,2",
     "SWIFT_VERSION": "6.0",
     "SWIFT_STRICT_CONCURRENCY": "complete",

@@ -1,7 +1,9 @@
 import Foundation
 
 /// 추적 종목: 티커 / 언어별 회사명 / 로고 도메인 / 소스별 심볼.
-/// Hyperliquid `xyz` dex 티커가 기준. Bybit·Bitget은 미국 주식 위주라 없으면 nil.
+/// Hyperliquid `xyz` dex 티커가 기준 (코인은 메인 dex). Bybit·Bitget은 미국 주식 위주라 없으면 nil.
+/// 내장 목록은 폴백이며, 앱 시작 시 Firestore `config/catalog`가 있으면 apply()로 덮어쓴다
+/// → 종목 추가/삭제는 앱 업데이트 없이 문서 수정만으로 반영.
 public enum Catalog {
     public struct Entry: Sendable {
         public let ticker: String        // Hyperliquid 기준 (예: "NVDA")
@@ -11,6 +13,30 @@ public enum Catalog {
         public let ja: String
         public let bybit: String?        // Bybit spot 심볼 (예: "NVDAXUSDT")
         public let bitget: String?       // Bitget USDT-futures 심볼 (예: "NVDAUSDT")
+
+        public init(ticker: String, domain: String, en: String, ko: String, ja: String,
+                    bybit: String?, bitget: String?) {
+            self.ticker = ticker
+            self.domain = domain
+            self.en = en
+            self.ko = ko
+            self.ja = ja
+            self.bybit = bybit
+            self.bitget = bitget
+        }
+
+        /// Firestore `config/catalog`의 entries 항목 파싱. 필수 필드 없으면 nil.
+        public init?(remote: [String: Any]) {
+            guard let ticker = remote["ticker"] as? String, !ticker.isEmpty,
+                  let en = remote["en"] as? String, !en.isEmpty else { return nil }
+            self.init(ticker: ticker,
+                      domain: remote["domain"] as? String ?? "",
+                      en: en,
+                      ko: remote["ko"] as? String ?? en,
+                      ja: remote["ja"] as? String ?? en,
+                      bybit: remote["bybit"] as? String,
+                      bitget: remote["bitget"] as? String)
+        }
 
         public func name(_ language: AppLanguage) -> String {
             switch language {
@@ -29,7 +55,8 @@ public enum Catalog {
         }
     }
 
-    public static let tracked: [Entry] = [
+    /// 내장 기본 목록 — 원격 카탈로그가 없거나 파싱 실패 시 사용.
+    private static let builtin: [Entry] = [
         Entry(ticker: "NVDA",   domain: "nvidia.com",    en: "NVIDIA",        ko: "엔비디아",       ja: "エヌビディア",   bybit: "NVDAXUSDT",  bitget: "NVDAUSDT"),
         Entry(ticker: "SMSN",   domain: "samsung.com",   en: "Samsung Elec.", ko: "삼성전자",       ja: "サムスン電子",   bybit: nil,          bitget: nil),
         Entry(ticker: "SKHX",   domain: "skhynix.com",   en: "SK hynix",      ko: "SK하이닉스",     ja: "SKハイニックス", bybit: nil,          bitget: nil),
@@ -49,16 +76,34 @@ public enum Catalog {
         Entry(ticker: "PLTR",   domain: "palantir.com",  en: "Palantir",      ko: "팔란티어",       ja: "パランティア",   bybit: "PLTRXUSDT",  bitget: "PLTRUSDT")
     ]
 
-    private static let byTicker: [String: Entry] = Dictionary(uniqueKeysWithValues: tracked.map { ($0.ticker, $0) })
+    // 여러 스레드(가격 서비스는 백그라운드, UI는 메인)에서 읽으므로 락으로 보호.
+    private static let stateLock = NSLock()
+    nonisolated(unsafe) private static var _tracked: [Entry] = builtin
+    nonisolated(unsafe) private static var _byTicker: [String: Entry] =
+        Dictionary(uniqueKeysWithValues: builtin.map { ($0.ticker, $0) })
 
-    public static let tickerSet = Set(tracked.map { $0.ticker })
+    public static var tracked: [Entry] {
+        stateLock.withLock { _tracked }
+    }
+
+    /// 원격 카탈로그 적용 (빈 목록은 무시 — 사고로 전 종목이 사라지는 것 방지).
+    public static func apply(_ entries: [Entry]) {
+        guard !entries.isEmpty else { return }
+        stateLock.withLock {
+            _tracked = entries
+            _byTicker = Dictionary(entries.map { ($0.ticker, $0) },
+                                   uniquingKeysWith: { first, _ in first })
+        }
+    }
+
+    public static var tickerSet: Set<String> { Set(tracked.map { $0.ticker }) }
 
     public static func name(for ticker: String, language: AppLanguage) -> String {
-        byTicker[ticker]?.name(language) ?? ticker
+        (stateLock.withLock { _byTicker[ticker] })?.name(language) ?? ticker
     }
 
     public static func logoURL(for ticker: String) -> URL? {
-        guard let domain = byTicker[ticker]?.domain else { return nil }
+        guard let domain = (stateLock.withLock { _byTicker[ticker] })?.domain, !domain.isEmpty else { return nil }
         return URL(string: "https://www.google.com/s2/favicons?domain=\(domain)&sz=128")
     }
 

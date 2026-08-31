@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- 릴리즈 CI 전용: 아카이브를 App Store Connect(TestFlight)로 바로 업로드 -->
+	<key>method</key>
+	<string>app-store-connect</string>
+	<key>destination</key>
+	<string>upload</string>
+	<key>teamID</key>
+	<string>33YSUT6XZ3</string>
+	<key>uploadSymbols</key>
+	<true/>
+	<!-- 버전·빌드번호는 태그/CI가 관리하므로 Xcode 자동 조정 끔 -->
+	<key>manageAppVersionAndBuildNumber</key>
+	<false/>
+</dict>
+</plist>

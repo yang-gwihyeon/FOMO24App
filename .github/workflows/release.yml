@@ -1,0 +1,78 @@
+name: Release (TestFlight)
+
+# v1.1 형식 태그 푸시 → 아카이브 → TestFlight 자동 업로드
+# 사용법: git tag v1.1 && git push origin v1.1
+on:
+  push:
+    tags: ["v*"]
+
+jobs:
+  testflight:
+    name: 아카이브 + TestFlight 업로드
+    runs-on: macos-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Xcode 선택
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
+      - name: Tuist·xcbeautify 설치
+        run: brew install tuist xcbeautify
+
+      - name: 실제 GoogleService-Info.plist 복원 (Secret)
+        env:
+          PLIST_B64: ${{ secrets.GOOGLE_SERVICE_INFO_PLIST_B64 }}
+        run: echo "$PLIST_B64" | base64 --decode > GoogleService-Info.plist
+
+      - name: 버전 주입 + 프로젝트 생성 (태그 v1.1 → 1.1)
+        env:
+          TUIST_BUILD_NUMBER: ${{ github.run_number }}
+        run: |
+          export TUIST_MARKETING_VERSION="${GITHUB_REF_NAME#v}"
+          echo "MARKETING_VERSION=$TUIST_MARKETING_VERSION, BUILD=$TUIST_BUILD_NUMBER"
+          tuist install 2>/dev/null || true
+          tuist generate --no-open
+
+      - name: App Store Connect API 키 복원 (Secret)
+        env:
+          ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 }}
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+        run: |
+          mkdir -p "$HOME/private_keys"
+          printf '%s' "$ASC_KEY_P8" > "$HOME/private_keys/AuthKey_${ASC_KEY_ID}.p8"
+
+      - name: 아카이브 (클라우드 자동 서명)
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+        run: |
+          set -o pipefail
+          xcodebuild archive \
+            -workspace FOMO24.xcworkspace \
+            -scheme FOMO24 \
+            -destination 'generic/platform=iOS' \
+            -archivePath build/FOMO24.xcarchive \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$HOME/private_keys/AuthKey_${ASC_KEY_ID}.p8" \
+            -authenticationKeyID "$ASC_KEY_ID" \
+            -authenticationKeyIssuerID "$ASC_ISSUER_ID" \
+            | xcbeautify
+
+      - name: TestFlight 업로드
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+        run: |
+          set -o pipefail
+          xcodebuild -exportArchive \
+            -archivePath build/FOMO24.xcarchive \
+            -exportOptionsPlist CI/ExportOptions.plist \
+            -exportPath build/export \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$HOME/private_keys/AuthKey_${ASC_KEY_ID}.p8" \
+            -authenticationKeyID "$ASC_KEY_ID" \
+            -authenticationKeyIssuerID "$ASC_ISSUER_ID" \
+            | xcbeautify

@@ -61,8 +61,11 @@ struct AddFomoSheet: View {
                         TextField(lang.t("0 (끔)", "0 (off)"), text: $alertPctText)
                             .keyboardType(.numberPad)
                             .onChange(of: alertPctText) { _, new in
-                                // 숫자만, 1% 단위, 최대 두 자리(99%)
-                                let filtered = String(new.filter(\.isNumber).prefix(2))
+                                // 숫자만, 1% 단위, 최대 30%
+                                var filtered = String(new.filter(\.isNumber).prefix(2))
+                                if let v = Int(filtered), Double(v) > FomoEntry.maxAlertPct {
+                                    filtered = "\(Int(FomoEntry.maxAlertPct))"
+                                }
                                 if filtered != new { alertPctText = filtered }
                             }
                         Text("%")
@@ -128,8 +131,8 @@ struct AddFomoSheet: View {
             return lang.t("기록 가격에서 ±\(p)%에 도달하면 딱 1번 알림이 와요. 이후엔 알림을 다시 설정해야 또 옵니다. 알림은 최대 \(FomoEntry.maxAlertCount)개까지.",
                           "You'll get exactly one push when the price moves ±\(p)% from your saved price. Re-set the alert to get another. Up to \(FomoEntry.maxAlertCount) alerts.")
         }
-        return lang.t("1% 단위로 입력하세요. 비우면 끔. 예: 5 입력 시 ±5% 도달할 때 딱 1번 알림이 와요. 최대 \(FomoEntry.maxAlertCount)개까지.",
-                      "Whole % only; leave empty for off. e.g. 5 → one push at ±5%. Up to \(FomoEntry.maxAlertCount) alerts.")
+        return lang.t("1% 단위, 최대 ±\(Int(FomoEntry.maxAlertPct))%. 비우면 끔. 예: 5 입력 시 ±5% 도달할 때 딱 1번 알림이 와요. 최대 \(FomoEntry.maxAlertCount)개까지.",
+                      "Whole % up to ±\(Int(FomoEntry.maxAlertPct))%; leave empty for off. e.g. 5 → one push at ±5%. Up to \(FomoEntry.maxAlertCount) alerts.")
     }
 
     /// 이미 알림이 켜진 기록 수 (최대 개수 제한용)

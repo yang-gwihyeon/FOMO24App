@@ -1,8 +1,8 @@
 import Foundation
 import FOMOCore
 
-/// Hyperliquid info 엔드포인트(`metaAndAssetCtxs`, dex="xyz"). API 키 불필요.
-/// 주식 선물 시세(PriceService) + FX 선물 환율(FXProvider) 모두 제공.
+/// Hyperliquid info 엔드포인트(`metaAndAssetCtxs`). API 키 불필요.
+/// 주식 선물(dex="xyz") + 코인 선물(메인 dex) 시세(PriceService), FX 선물 환율(FXProvider) 제공.
 public struct HyperliquidService: PriceService, FXProvider {
     private let endpoint = URL(string: "https://api.hyperliquid.xyz/info")!
     private let dex = "xyz"
@@ -10,7 +10,7 @@ public struct HyperliquidService: PriceService, FXProvider {
     public init() {}
 
     public func fetchAssets() async throws -> [StockFuture] {
-        let byTicker = try await fetchByTicker()
+        let byTicker = try await fetchAllDexes()
         return Catalog.tracked.compactMap { entry in
             guard let v = byTicker[entry.ticker] else { return nil }
             return StockFuture(ticker: entry.ticker, usdPrice: v.mark,
@@ -19,7 +19,7 @@ public struct HyperliquidService: PriceService, FXProvider {
     }
 
     public func fetchFXRates() async throws -> [String: Double] {
-        let byTicker = try await fetchByTicker()
+        let byTicker = try await fetchByTicker(dex: dex)
         var fx: [String: Double] = [:]
         for currency in Currency.allCases {
             guard let t = currency.fxTicker, let v = byTicker[t] else { continue }
@@ -30,7 +30,17 @@ public struct HyperliquidService: PriceService, FXProvider {
 
     // MARK: 공통 요청
 
-    private func fetchByTicker() async throws -> [String: (mark: Double, prev: Double, vol: Double)] {
+    /// 주식(xyz dex) + 코인(메인 dex)을 동시에 조회해 병합. 코인 dex 실패는 무시(주식만 표시).
+    /// 티커 충돌 시 xyz(주식) 우선.
+    private func fetchAllDexes() async throws -> [String: (mark: Double, prev: Double, vol: Double)] {
+        async let stocks = fetchByTicker(dex: dex)
+        async let coins = try? fetchByTicker(dex: nil)
+        var merged = (await coins) ?? [:]
+        for (ticker, v) in try await stocks { merged[ticker] = v }
+        return merged
+    }
+
+    private func fetchByTicker(dex: String?) async throws -> [String: (mark: Double, prev: Double, vol: Double)] {
         var request = URLRequest(url: endpoint)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -64,7 +74,7 @@ public struct HyperliquidService: PriceService, FXProvider {
 
 private struct InfoRequest: Encodable {
     let type: String
-    let dex: String
+    let dex: String?   // nil이면 필드 생략 → 메인(코인) dex 조회
 }
 
 private struct MetaAndCtxs: Decodable {

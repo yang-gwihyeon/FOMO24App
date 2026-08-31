@@ -56,8 +56,8 @@ struct FomoView: View {
                 Button(lang.t("설정", "Set")) { applyAlertInput() }
                 Button(lang.t("취소", "Cancel"), role: .cancel) {}
             } message: {
-                Text(lang.t("몇 %에 도달하면 알려드릴까요? (1% 단위, 0 = 끔)\n도달 시 딱 1번만 알림이 와요. 다시 받으려면 재설정하세요.",
-                            "At what % move should we notify you? (whole %, 0 = off)\nYou'll get exactly one alert. Re-set it to get another."))
+                Text(lang.t("몇 %에 도달하면 알려드릴까요? (1~\(Int(FomoEntry.maxAlertPct))%, 0 = 끔)\n도달 시 딱 1번만 알림이 와요. 다시 받으려면 재설정하세요.",
+                            "At what % move should we notify you? (1–\(Int(FomoEntry.maxAlertPct))%, 0 = off)\nYou'll get exactly one alert. Re-set it to get another."))
             }
             .alert(lang.t("가격 알림은 최대 \(FomoEntry.maxAlertCount)개", "Up to \(FomoEntry.maxAlertCount) price alerts"), isPresented: $showLimitAlert) {
                 Button(lang.t("확인", "OK"), role: .cancel) {}
@@ -174,7 +174,7 @@ struct FomoView: View {
     /// 입력된 %를 검증(1% 단위, 최대 개수)하고 적용.
     private func applyAlertInput() {
         guard let entry = alertTarget else { return }
-        let pct = Double(Int(alertInput.filter(\.isNumber)) ?? 0)
+        let pct = min(Double(Int(alertInput.filter(\.isNumber)) ?? 0), FomoEntry.maxAlertPct)
         alertTarget = nil
         if pct > 0 {
             let othersOn = entries.filter { $0.alertPct > 0 && $0 !== entry }.count

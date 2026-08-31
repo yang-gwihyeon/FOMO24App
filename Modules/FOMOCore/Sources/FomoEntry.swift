@@ -9,6 +9,9 @@ public final class FomoEntry {
     /// 가격 알림을 켤 수 있는 최대 기록 수 (서버 푸시 부하·스팸 방지)
     public static let maxAlertCount = 3
 
+    /// 알림 임계값 상한(%) — 이보다 큰 값은 입력 UI에서 잘라낸다
+    public static let maxAlertPct: Double = 30
+
     public var ticker: String          // 예: "NVDA"
     public var savedPriceUSD: Double    // 기록 시점 가격 (USD 기준)
     public var savedAt: Date            // 기록한 날짜·시간
