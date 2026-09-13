@@ -12,7 +12,7 @@ jobs:
     runs-on: macos-latest
     timeout-minutes: 90
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Xcode 선택
         uses: maxim-lobanov/setup-xcode@v1
