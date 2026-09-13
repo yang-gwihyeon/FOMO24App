@@ -35,7 +35,9 @@ flowchart LR
 
 ## 상태 (2026-09-12)
 - [x] 1, 2, 3, 4, 5(템플릿), 6(ADR 6건)
-- [ ] main 브랜치 보호 (브리핑 기능 커밋 후 적용)
-- [ ] CI lint 잡 분리 (`ci.yml` 수정, 브리핑 기능 커밋 후)
-- [ ] `claude.yml` AI 리뷰 워크플로
-- [ ] B0 기준선 측정
+- [x] main 브랜치 보호 (2026-09-13): PR 필수, 필수 체크 = SwiftFormat 검사 · 모듈 테스트 + 앱 빌드, 관리자 포함 강제, force push·삭제 금지
+- [x] CI lint/format 잡 분리 (2026-09-13): ubuntu 컨테이너/docker run, 각 15초 내. SwiftLint는 기준선 error 5 해소 전까지 continue-on-error
+- [x] Dependabot 첫 PR 2건 (checkout v7, cache v6) — 무료 티어에서 자동 생성·CI 통과·머지
+- [ ] `claude.yml` AI 리뷰 워크플로 — Anthropic API 키 또는 Claude 구독 OAuth 토큰을 Secrets에 넣어야 함 (사용자 결정 필요)
+- [ ] B0 기준선 측정 (실기기 + Instruments, 사용자와 함께)
+- [ ] 첫 카드형 PR: 앱 코드 강제 언래핑 5곳 제거 → SwiftLint 잡을 블로킹으로 전환
