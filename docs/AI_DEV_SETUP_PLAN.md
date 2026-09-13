@@ -192,8 +192,15 @@ Tuist 단일 소스 · 3모듈 단방향 의존(FOMOCore ← MarketKit ← 앱/�
 - 린트 기준선: 170 → 24 (규칙을 기존 정렬 스타일에 맞춘 뒤). 남은 error 5 = 앱 코드 강제 언래핑 5곳
   (`App.swift` DEBUG 데모 3, `MoreView:105`, `CalendarStore:102`) → 첫 번째 카드형 PR 후보
 
-보류 (브리핑 기능 커밋 후):
-- `Project.swift`·`ci.yml` 수정(lint 잡 분리), main 브랜치 보호, `claude.yml`
+2026-09-13 추가 완료:
+- 세팅 파일 커밋·푸시 (브리핑 기능 파일과 분리), CI 첫 녹색 (11m30s)
+- `ci.yml`: SwiftLint(컨테이너)·SwiftFormat(docker run) 잡을 ubuntu로 분리 — 각 15초 내
+  - 배운 것: swiftformat 이미지는 셸이 없어 `container:` 잡으로 못 띄움 → `docker run` 스텝. `--semicolons never`는 한 줄 switch를 어색하게 쪼갬 → `inline`
+- main 브랜치 보호: PR 필수, 필수 체크(format·build), 관리자 포함 강제
+- Dependabot: swift 생태계는 Tuist 프로젝트라 동작 불가(Package.swift 없음) → 제외. actions 갱신 PR 2건 머지
+
+보류:
+- `claude.yml` (Secrets에 토큰 필요 → 사용자 결정), `Project.swift` 관련 변경(브리핑 기능 커밋 후)
 - ~~사용자 손 필요: `yang-gwihyeon` 계정 잠금 해제~~ → 2026-09-13 해결. 원인: 2024-06-27 Copilot 추정 $10 결제가 JCB 카드에서 거절 → 계정 잠금 2년 지속. 카드를 MasterCard로 교체하자 약 20분 내 자동 해제. CI 재실행 녹색(11m30s).
 - CI 첫 녹색 런의 경고: `AppFont.swift:29-31` UIKit appearance 호출이 nonisolated 컨텍스트 (Swift 6 경고 5건) · `actions/checkout@v4`·`cache@v4` Node 20 deprecated → 카드형 PR 후보 2개 추가
 
