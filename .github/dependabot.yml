@@ -1,4 +1,6 @@
-# GitHub Actions·SPM 의존성 주간 갱신 PR. 공개 저장소 무료.
+# GitHub Actions 의존성 주간 갱신 PR. 공개 저장소 무료.
+# - swift 생태계는 Tuist 프로젝트(Package.swift 없음)라 Dependabot이 파싱 못 함 → 제외. SPM 갱신은 `tuist install` 후 수동 PR.
+# - Backend/hourly-digest(npm)는 해당 폴더가 커밋된 뒤 아래 주석을 해제한다.
 version: 2
 updates:
   - package-ecosystem: github-actions
@@ -6,14 +8,8 @@ updates:
     schedule: { interval: weekly, day: monday, time: "09:00", timezone: Asia/Seoul }
     commit-message: { prefix: "ci" }
     labels: [dependencies, ci]
-  - package-ecosystem: swift
-    directory: /
-    schedule: { interval: weekly, day: monday, time: "09:00", timezone: Asia/Seoul }
-    commit-message: { prefix: "chore" }
-    labels: [dependencies]
-    open-pull-requests-limit: 3
-  - package-ecosystem: npm
-    directory: /Backend/hourly-digest
-    schedule: { interval: weekly, day: monday, time: "09:00", timezone: Asia/Seoul }
-    commit-message: { prefix: "chore(backend)" }
-    labels: [dependencies, backend]
+  # - package-ecosystem: npm
+  #   directory: /Backend/hourly-digest
+  #   schedule: { interval: weekly, day: monday, time: "09:00", timezone: Asia/Seoul }
+  #   commit-message: { prefix: "chore(backend)" }
+  #   labels: [dependencies, backend]

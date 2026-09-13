@@ -10,6 +10,29 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # 린트는 리눅스 러너에서 수 초. macOS 러너(10배 과금·느린 큐)를 스타일 검사에 쓰지 않는다.
+  # 도입 시점 기준선: error 5 (앱 코드 강제 언래핑) — 카드형 PR로 0이 되면 continue-on-error 를 제거한다.
+  lint:
+    name: SwiftLint (ubuntu)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    container: ghcr.io/realm/swiftlint:0.65.0
+    continue-on-error: true   # TODO(baseline): 기존 error 0 달성 후 제거 → 블로킹 게이트로 전환
+    steps:
+      - uses: actions/checkout@v4
+      - name: SwiftLint
+        run: swiftlint lint --reporter github-actions-logging
+
+  format:
+    name: SwiftFormat 검사 (ubuntu)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    container: ghcr.io/nicklockwood/swiftformat:0.63.0
+    steps:
+      - uses: actions/checkout@v4
+      - name: SwiftFormat --lint
+        run: swiftformat --lint . --reporter github-actions-log
+
   test-and-build:
     name: 모듈 테스트 + 앱 빌드
     runs-on: macos-latest
