@@ -54,7 +54,7 @@ jobs:
         run: cp CI/GoogleService-Info.example.plist GoogleService-Info.plist
 
       - name: SPM 캐시
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: |
             ~/Library/Developer/Xcode/DerivedData/**/SourcePackages
