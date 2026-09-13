@@ -3,4 +3,4 @@
 --swiftversion 6.0
 --exclude Derived,.build,build,FOMO24.xcodeproj,FOMO24.xcworkspace,Backend,Disabled,IconSource
 --rules trailingSpace,linebreakAtEndOfFile,consecutiveBlankLines,duplicateImports,semicolons,spaceInsideParens,spaceInsideBrackets,spaceInsideBraces,spaceAroundBraces,spaceAroundParens,spaceAroundBrackets
---semicolons never
+--semicolons inline   # 한 줄 switch·연속 대입 같은 의도적 압축 표현은 유지, 줄 끝 세미콜론만 제거

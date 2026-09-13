@@ -463,7 +463,6 @@ private struct AddCalendarEventSheet: View {
     }
 }
 
-
 // MARK: - 개장 알림 칩
 
 private struct OpenAlertChip: View {
