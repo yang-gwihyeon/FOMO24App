@@ -19,7 +19,7 @@ jobs:
     container: ghcr.io/realm/swiftlint:0.65.0
     continue-on-error: true   # TODO(baseline): 기존 error 0 달성 후 제거 → 블로킹 게이트로 전환
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: SwiftLint
         run: swiftlint lint --reporter github-actions-logging
 
@@ -28,7 +28,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       # swiftformat 이미지는 셸이 없어 `container:` 잡으로 못 띄움(Docker start fail) → docker run 으로 실행
       - name: SwiftFormat --lint
         run: |
@@ -40,7 +40,7 @@ jobs:
     runs-on: macos-latest
     timeout-minutes: 60
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Xcode 선택
         uses: maxim-lobanov/setup-xcode@v1
