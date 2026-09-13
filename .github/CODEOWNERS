@@ -1,0 +1,8 @@
+# 모듈별 책임 범위 명시. 1인 개발이지만 경계를 문서화하고 리뷰 요청을 자동화한다.
+*                          @yang-gwihyeon
+/Modules/FOMOCore/         @yang-gwihyeon
+/Modules/MarketKit/        @yang-gwihyeon
+/Widgets/                  @yang-gwihyeon
+/Backend/                  @yang-gwihyeon
+/.github/                  @yang-gwihyeon
+/Project.swift             @yang-gwihyeon

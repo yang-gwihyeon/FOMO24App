@@ -1,0 +1,102 @@
+# FOMO24 SwiftLint — CODE_REVIEW.md 의 사람 규칙을 기계 규칙으로.
+# 로컬: make lint / CI: lint 잡(ubuntu). --strict 이므로 warning도 실패.
+included:
+  - Sources
+  - Modules
+  - Widgets
+  - NotificationService
+excluded:
+  - Derived
+  - .build
+  - build
+  - FOMO24.xcodeproj
+  - FOMO24.xcworkspace
+  - Backend
+  - Disabled
+  - IconSource
+
+# CODE_REVIEW.md §4 크래시·안정성 — 앱 코드에서 금지
+opt_in_rules:
+  - force_unwrapping
+  - empty_count
+  - closure_spacing
+  - contains_over_filter_is_empty
+  - first_where
+  - last_where
+  - redundant_nil_coalescing
+  - toggle_bool
+  - unneeded_parentheses_in_closure_argument
+  - discouraged_optional_boolean
+  - private_outlet
+  - sorted_first_last
+
+force_unwrapping:
+  severity: error     # 테스트 타깃은 아래 excluded 로 제외되지 않으므로 파일 단위 disable 주석 사용:
+                      #   // swiftlint:disable force_unwrapping  (테스트 파일 상단)
+force_try:
+  severity: error
+force_cast:
+  severity: error
+
+# 스타일 — 기존 코드 기준으로 관대하게 (한국어 주석·긴 switch 많음)
+line_length:
+  warning: 160
+  error: 400          # 더보기 탭의 긴 한국어 안내 문자열 허용. 코드 줄은 160 경고로 잡힘
+  ignores_comments: true
+  ignores_urls: true
+  ignores_interpolated_strings: true
+large_tuple:
+  warning: 3          # 목 데이터 테이블 (ticker, price, prev, volume) 허용
+  error: 5
+function_body_length:
+  warning: 80
+  error: 150
+type_body_length:
+  warning: 400
+  error: 600
+file_length:
+  warning: 500
+  error: 800
+cyclomatic_complexity:
+  warning: 15
+  error: 25
+
+# 한국어 테스트 이름(미국_프리마켓은_preMarket)·짧은 도메인 이름(us, kr, q) 허용
+identifier_name:
+  min_length: 1
+  allowed_symbols: ["_"]
+  validates_start_with_lowercase: off
+disabled_rules:
+  - todo
+  - trailing_comma
+  - nesting                 # enum 안의 struct/enum 중첩을 의도적으로 사용
+  - comma                   # Catalog·Mock 테이블의 열 정렬(수동 공백)을 의도적으로 사용
+  - colon                   # 위와 동일
+  - switch_case_alignment   # 기존 코드의 case 정렬 스타일 유지
+  - implicit_optional_initialization
+
+custom_rules:
+  no_urlsession_in_views:
+    name: "뷰·모델에서 URLSession 직접 사용 금지"
+    regex: 'URLSession'
+    included: "(Sources/Views|Sources/ViewModels|Modules/FOMOCore)/.*\\.swift"
+    message: "네트워크는 MarketKit 또는 Sources/Services 에만 (CODE_REVIEW.md §1)"
+    severity: error
+  no_firebase_in_core:
+    name: "FOMOCore에 Firebase 금지"
+    regex: '^import Firebase'
+    included: "Modules/FOMOCore/.*\\.swift"
+    message: "FOMOCore는 시스템 프레임워크만 (CODE_REVIEW.md §1)"
+    severity: error
+  formatter_in_view_body:
+    name: "뷰에서 포매터 생성 금지"
+    regex: '(NumberFormatter|DateFormatter)\(\)'
+    included: "Sources/Views/.*\\.swift"
+    message: "Fmt 캐시를 사용 (CODE_REVIEW.md §7)"
+    severity: warning
+  unsafe_nonisolated_needs_comment:
+    name: "nonisolated(unsafe)는 사유 주석 필수"
+    # 같은 줄에 // 가 없고, 바로 윗줄도 주석이 아닐 때만 위반
+    regex: '(?:^|\n)(?![ \t]*//)[^\n]*\n[ \t]*nonisolated\(unsafe\)(?![^\n]*//)[^\n]*'
+    message: "SDK 스레드 세이프 근거를 같은 줄 또는 바로 윗줄 주석으로 (CODE_REVIEW.md §2)"
+    severity: warning

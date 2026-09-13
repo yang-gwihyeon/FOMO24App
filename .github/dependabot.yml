@@ -1,0 +1,19 @@
+# GitHub Actions·SPM 의존성 주간 갱신 PR. 공개 저장소 무료.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule: { interval: weekly, day: monday, time: "09:00", timezone: Asia/Seoul }
+    commit-message: { prefix: "ci" }
+    labels: [dependencies, ci]
+  - package-ecosystem: swift
+    directory: /
+    schedule: { interval: weekly, day: monday, time: "09:00", timezone: Asia/Seoul }
+    commit-message: { prefix: "chore" }
+    labels: [dependencies]
+    open-pull-requests-limit: 3
+  - package-ecosystem: npm
+    directory: /Backend/hourly-digest
+    schedule: { interval: weekly, day: monday, time: "09:00", timezone: Asia/Seoul }
+    commit-message: { prefix: "chore(backend)" }
+    labels: [dependencies, backend]

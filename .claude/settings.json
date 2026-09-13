@@ -1,0 +1,28 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "timeout": 20,
+            "command": "f=$(jq -r '.tool_input.file_path // empty' 2>/dev/null); case \"$f\" in *.swift) command -v swiftformat >/dev/null && [ -f \"$f\" ] && swiftformat --quiet \"$f\" >/dev/null 2>&1 ;; esac; exit 0"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "timeout": 15,
+            "command": "c=$(jq -r '.tool_input.command // empty' 2>/dev/null); case \"$c\" in *'git commit'*) cd \"$(git rev-parse --show-toplevel 2>/dev/null || pwd)\"; if [ -x scripts/check-secrets.sh ]; then scripts/check-secrets.sh >&2 || exit 2; fi ;; esac; exit 0"
+          }
+        ]
+      }
+    ]
+  }
+}

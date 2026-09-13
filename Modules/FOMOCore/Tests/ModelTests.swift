@@ -1,3 +1,5 @@
+// 테스트는 컴파일타임 보장 픽스처에 한해 강제 언래핑 허용 (CODE_REVIEW.md §4)
+// swiftlint:disable force_unwrapping
 import Foundation
 import Testing
 @testable import FOMOCore
@@ -85,3 +87,5 @@ struct AppLanguageTests {
         #expect(AppLanguage.ko.marketPulse(openCount: 0) == "정규장 전체 마감 · 24H 거래중")
     }
 }
+
+// swiftlint:enable force_unwrapping

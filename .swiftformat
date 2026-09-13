@@ -1,0 +1,6 @@
+# FOMO24 SwiftFormat — 의도적 열 정렬(Catalog·Mock 테이블)과 기존 줄바꿈을 건드리지 않는 최소 규칙만.
+# 규칙을 넓히려면 PR로 근거와 함께 (전체 리포맷 diff는 리뷰 불가).
+--swiftversion 6.0
+--exclude Derived,.build,build,FOMO24.xcodeproj,FOMO24.xcworkspace,Backend,Disabled,IconSource
+--rules trailingSpace,linebreakAtEndOfFile,consecutiveBlankLines,duplicateImports,semicolons,spaceInsideParens,spaceInsideBrackets,spaceInsideBraces,spaceAroundBraces,spaceAroundParens,spaceAroundBrackets
+--semicolons never
