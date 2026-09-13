@@ -27,11 +27,13 @@ jobs:
     name: SwiftFormat 검사 (ubuntu)
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    container: ghcr.io/nicklockwood/swiftformat:0.63.0
     steps:
       - uses: actions/checkout@v4
+      # swiftformat 이미지는 셸이 없어 `container:` 잡으로 못 띄움(Docker start fail) → docker run 으로 실행
       - name: SwiftFormat --lint
-        run: swiftformat --lint . --reporter github-actions-log
+        run: |
+          docker run --rm -v "$PWD:/work" -w /work \
+            ghcr.io/nicklockwood/swiftformat:0.63.0 --lint . --reporter github-actions-log
 
   test-and-build:
     name: 모듈 테스트 + 앱 빌드
