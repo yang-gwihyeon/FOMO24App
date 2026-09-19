@@ -67,19 +67,25 @@ final class LiveActivityManager {
         }
     }
 
-    func toggle(ticker: String, name: String, price: Double, changePct: Double) {
+    /// - Parameters:
+    ///   - currency: 추적 시작 시점의 표시 통화 (아일랜드가 이 통화로 표시)
+    ///   - fxRate: 그 통화의 현재 환율. 비USD인데 nil이면 USD로 시작.
+    func toggle(ticker: String, name: String, price: Double, changePct: Double,
+                currency: Currency = .usd, fxRate: Double? = nil) {
         if isTracking(ticker) {
             end(ticker: ticker)
         } else {
-            start(ticker: ticker, name: name, price: price, changePct: changePct)
+            // 서버 푸시는 USD만 보내므로 통화·환율은 Attributes에 고정하고 위젯이 환산한다 (ADR-0007)
+            let attributes = PriceActivityAttributes(ticker: ticker, name: name, currency: currency, fxRate: fxRate)
+            start(attributes: attributes, price: price, changePct: changePct)
         }
     }
 
-    private func start(ticker: String, name: String, price: Double, changePct: Double) {
+    private func start(attributes: PriceActivityAttributes, price: Double, changePct: Double) {
         guard isAvailable else { return }
+        let ticker = attributes.ticker
         // 한 번에 1종목만 — 새 추적 시작 시 기존 액티비티 종료
         for existing in trackedTickers { end(ticker: existing) }
-        let attributes = PriceActivityAttributes(ticker: ticker, name: name)
         let state = PriceActivityAttributes.ContentState(
             price: price, changePct: changePct, updatedAt: Date.now.timeIntervalSince1970)
         do {

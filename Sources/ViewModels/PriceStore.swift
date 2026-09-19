@@ -185,16 +185,15 @@ final class PriceStore {
 
     // MARK: - 통화 변환
 
+    /// 해당 통화의 현재 환율 (USD는 nil — 변환 불필요).
+    func fxRate(for currency: Currency) -> Double? {
+        guard currency.fxTicker != nil, let rate = fxRates[currency.code], rate > 0 else { return nil }
+        return rate
+    }
+
     /// 선택 통화 기준 가격으로 변환.
     func convertedPrice(_ usd: Double) -> Double {
-        let currency = selectedCurrency
-        guard let fxTicker = currency.fxTicker else { return usd } // USD
-        guard let rate = fxRates[currency.code], rate > 0 else { return usd }
-        _ = fxTicker
-        switch currency.mode {
-        case .perUSD:  return usd * rate   // KRW, JPY
-        case .perUnit: return usd / rate   // EUR, GBP
-        }
+        selectedCurrency.convert(usd: usd, rate: fxRate(for: selectedCurrency))
     }
 
     /// 통화 기호 + 자릿수 포맷팅된 문자열.

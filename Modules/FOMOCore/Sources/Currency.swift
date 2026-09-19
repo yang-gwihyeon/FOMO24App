@@ -67,4 +67,14 @@ public enum Currency: String, CaseIterable, Identifiable, Sendable {
         case .usd, .eur, .gbp: return 2
         }
     }
+
+    /// USD 가격을 이 통화로 환산. 환율이 없거나 0 이하면 USD 그대로 반환한다
+    /// (환율 로드 실패 시 빈 화면 대신 달러 표시 — 앱·위젯·라이브 액티비티 공용 규칙).
+    public func convert(usd: Double, rate: Double?) -> Double {
+        guard fxTicker != nil, let rate, rate > 0 else { return usd }
+        switch mode {
+        case .perUSD: return usd * rate   // KRW, JPY
+        case .perUnit: return usd / rate  // EUR, GBP
+        }
+    }
 }
