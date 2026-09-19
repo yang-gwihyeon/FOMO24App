@@ -87,7 +87,9 @@ struct PriceRowView: View {
                 ticker: ticker,
                 name: Catalog.name(for: ticker, language: lang),
                 price: quote.usdPrice,
-                changePct: quote.change24h)
+                changePct: quote.change24h,
+                currency: store.selectedCurrency,
+                fxRate: store.fxRate(for: store.selectedCurrency))
         }
     }
 

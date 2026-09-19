@@ -25,7 +25,7 @@ struct PriceLiveActivity: Widget {
                 }
                 DynamicIslandExpandedRegion(.trailing) {
                     VStack(alignment: .trailing, spacing: 2) {
-                        Text(WK.priceText(context.state.price))
+                        Text(WK.priceText(usd: context.state.price, in: context.attributes))
                             .font(.system(size: 17, weight: .bold, design: .rounded))
                             .monospacedDigit()
                         Text(WK.pctText(context.state.changePct))
@@ -73,7 +73,7 @@ struct PriceLiveActivity: Widget {
             }
             Spacer()
             VStack(alignment: .trailing, spacing: 2) {
-                Text(WK.priceText(context.state.price))
+                Text(WK.priceText(usd: context.state.price, in: context.attributes))
                     .font(.system(size: 20, weight: .bold, design: .rounded))
                     .monospacedDigit()
                 Text(WK.pctText(context.state.changePct))

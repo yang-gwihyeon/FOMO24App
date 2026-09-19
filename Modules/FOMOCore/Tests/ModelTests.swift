@@ -45,6 +45,56 @@ struct CurrencyTests {
             #expect(c.code == c.rawValue.uppercased())
         }
     }
+
+    @Test func 원화_환산은_곱셈() {
+        #expect(Currency.krw.convert(usd: 100, rate: 1400) == 140_000)
+        #expect(Currency.jpy.convert(usd: 2, rate: 150) == 300)
+    }
+
+    @Test func 유로_환산은_나눗셈() {
+        #expect(abs(Currency.eur.convert(usd: 110, rate: 1.1) - 100) < 0.0001)
+    }
+
+    @Test func 달러는_환율_무시() {
+        #expect(Currency.usd.convert(usd: 123.45, rate: 1400) == 123.45)
+    }
+
+    @Test func 환율_없거나_0이면_달러값_그대로() {
+        #expect(Currency.krw.convert(usd: 100, rate: nil) == 100)
+        #expect(Currency.krw.convert(usd: 100, rate: 0) == 100)
+        #expect(Currency.krw.convert(usd: 100, rate: -1) == 100)
+    }
+}
+
+struct PriceActivityAttributesTests {
+    @Test func 시작_통화와_환율로_현지가격_환산() {
+        let a = PriceActivityAttributes(ticker: "NVDA", name: "엔비디아", currency: .krw, fxRate: 1400)
+        #expect(a.currency == .krw)
+        #expect(a.localPrice(usd: 100) == 140_000)
+    }
+
+    @Test func 비달러인데_환율없으면_달러로_시작() {
+        let a = PriceActivityAttributes(ticker: "NVDA", name: "NVIDIA", currency: .krw, fxRate: nil)
+        #expect(a.currency == .usd)
+        #expect(a.localPrice(usd: 100) == 100)
+    }
+
+    @Test func 통화필드_없는_구버전_JSON은_달러로_복원() throws {
+        let json = Data(#"{"ticker":"NVDA","name":"NVIDIA"}"#.utf8)
+        let a = try JSONDecoder().decode(PriceActivityAttributes.self, from: json)
+        #expect(a.currency == .usd)
+        #expect(a.fxRate == 1)
+        #expect(a.ticker == "NVDA")
+    }
+
+    @Test func 인코딩_디코딩_왕복() throws {
+        let a = PriceActivityAttributes(ticker: "TSLA", name: "테슬라", currency: .jpy, fxRate: 150)
+        let data = try JSONEncoder().encode(a)
+        let b = try JSONDecoder().decode(PriceActivityAttributes.self, from: data)
+        #expect(b.currency == .jpy)
+        #expect(b.fxRate == 150)
+        #expect(b.localPrice(usd: 2) == 300)
+    }
 }
 
 struct CatalogTests {

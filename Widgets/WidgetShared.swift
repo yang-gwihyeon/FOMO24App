@@ -1,3 +1,4 @@
+import FOMOCore
 import SwiftUI
 
 /// 위젯 전용 미니 도구 — 앱 본체와 의존성을 끊기 위해 자체 포함.
@@ -45,6 +46,25 @@ enum WK {
             ? "$" + (groupedFmt.string(from: NSNumber(value: value)) ?? String(Int(value)))
             : String(format: "$%.2f", value)
     }
+
+    /// 라이브 액티비티용: USD 가격을 액티비티 시작 시점 통화로 환산해 기호+자릿수 포맷.
+    /// 1,000 이상은 통화 무관 정수(천 단위 구분) — 아일랜드 폭이 좁아 소수 자리를 버린다.
+    static func priceText(usd: Double, in attributes: PriceActivityAttributes) -> String {
+        let currency = attributes.currency
+        let local = attributes.localPrice(usd: usd)
+        let fmt = (local >= 1000 || currency.fractionDigits == 0) ? groupedFmt : twoDigitFmt
+        let number = fmt.string(from: NSNumber(value: local)) ?? String(Int(local))
+        return currency.symbol + number
+    }
+
+    // 통화 자릿수는 0 또는 2뿐 — 포매터 2개를 고정 캐시 (뷰 바디 생성 금지)
+    private static let twoDigitFmt: NumberFormatter = {
+        let f = NumberFormatter()
+        f.numberStyle = .decimal
+        f.minimumFractionDigits = 2
+        f.maximumFractionDigits = 2
+        return f
+    }()
 
     static func pctText(_ pct: Double) -> String {
         String(format: "%@%.2f%%", pct >= 0 ? "+" : "", pct)
