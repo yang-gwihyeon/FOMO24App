@@ -69,6 +69,18 @@ enum WK {
     static func pctText(_ pct: Double) -> String {
         String(format: "%@%.2f%%", pct >= 0 ? "+" : "", pct)
     }
+
+    // MARK: - 컴팩트(접힌 아일랜드) 전용 — 폭이 좁아 가격은 축약, 등락률은 소수 1자리
+
+    /// 컴팩트 트레일링용 축약 가격. 규칙과 테스트는 FOMOCore `Currency.compactText`.
+    static func compactPriceText(usd: Double, in attributes: PriceActivityAttributes) -> String {
+        attributes.currency.compactText(local: attributes.localPrice(usd: usd))
+    }
+
+    /// "+1.3%" — 확장 뷰의 2자리("+1.23%")보다 한 글자 절약.
+    static func compactPctText(_ pct: Double) -> String {
+        String(format: "%@%.1f%%", pct >= 0 ? "+" : "", pct)
+    }
 }
 
 /// Hyperliquid에서 티커별 (가격, 24h%)를 가져온다 — 위젯 타임라인용 경량 페처.
