@@ -77,4 +77,49 @@ public enum Currency: String, CaseIterable, Identifiable, Sendable {
         case .perUnit: return usd / rate  // EUR, GBP
         }
     }
+
+    /// 다이나믹 아일랜드 컴팩트 뷰용 축약 가격 (기호 포함).
+    /// 컴팩트 영역은 양쪽 합쳐 10자 안팎이라 큰 수는 통화 언어의 단위로 줄인다.
+    ///   ₩248,900 → "₩24.9만", ¥38,500 → "¥3.9万", $112,345 → "$112.3K", $175.23 → "$175.2", $45.67 → "$45.67"
+    /// 단위는 기기 로케일이 아니라 **통화**를 따른다 — ₩에 K, $에 만이 붙는 어색함을 피하고 테스트를 결정적으로 만들기 위해.
+    public func compactText(local: Double) -> String {
+        let abs = Swift.abs(local)
+        let sign = local < 0 ? "-" : ""
+        let (big, small): (String, String) = {
+            switch language {
+            case .ko: return ("억", "만")
+            case .ja: return ("億", "万")
+            case .en: return ("M", "K")
+            }
+        }()
+        let (bigUnit, smallUnit): (Double, Double) = language == .en ? (1_000_000, 1_000) : (100_000_000, 10_000)
+        // 축약 임계값: 한/일 통화는 1만, 달러계는 1만(달러 4자리까지는 원문 유지 — "$1,234"가 "$1.2K"보다 정확)
+        let threshold: Double = 10_000
+        func oneDecimal(_ v: Double) -> String {
+            let s = String(format: "%.1f", v)
+            return s.hasSuffix(".0") ? String(s.dropLast(2)) : s
+        }
+        let body: String
+        if abs >= bigUnit, abs >= threshold {
+            body = oneDecimal(abs / bigUnit) + big
+        } else if abs >= threshold {
+            body = oneDecimal(abs / smallUnit) + small
+        } else if abs >= 1000 || fractionDigits == 0 {
+            body = Self.groupedFormatter.string(from: NSNumber(value: abs)) ?? String(Int(abs))
+        } else if abs >= 100 {
+            body = String(format: "%.1f", abs)
+        } else {
+            body = String(format: "%.2f", abs)
+        }
+        return sign + symbol + body
+    }
+
+    // 뷰 바디에서 포매터를 만들지 않도록 고정 캐시 (CODE_REVIEW.md §7)
+    private static let groupedFormatter: NumberFormatter = {
+        let f = NumberFormatter()
+        f.numberStyle = .decimal
+        f.maximumFractionDigits = 0
+        f.locale = Locale(identifier: "en_US_POSIX")   // 천 단위 구분자 ","로 고정
+        return f
+    }()
 }
