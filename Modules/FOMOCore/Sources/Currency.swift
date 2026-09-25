@@ -119,7 +119,8 @@ public enum Currency: String, CaseIterable, Identifiable, Sendable {
         let f = NumberFormatter()
         f.numberStyle = .decimal
         f.maximumFractionDigits = 0
-        f.locale = Locale(identifier: "en_US_POSIX")   // 천 단위 구분자 ","로 고정
+        f.locale = Locale(identifier: "en_US")         // 천 단위 구분자 ","로 고정 (POSIX 로케일은 구분자가 비어 있음)
+        f.usesGroupingSeparator = true
         return f
     }()
 }
