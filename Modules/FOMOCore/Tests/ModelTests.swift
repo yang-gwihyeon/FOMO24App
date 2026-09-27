@@ -138,4 +138,44 @@ struct AppLanguageTests {
     }
 }
 
+struct CurrencyCompactTextTests {
+    @Test func 원화는_만_단위로_축약() {
+        #expect(Currency.krw.compactText(local: 248_900) == "₩24.9만")
+        #expect(Currency.krw.compactText(local: 10_000) == "₩1만")          // ".0" 제거
+        #expect(Currency.krw.compactText(local: 150_000_000) == "₩1.5억")
+    }
+
+    @Test func 원화_1만_미만은_정수_그대로() {
+        #expect(Currency.krw.compactText(local: 9_850) == "₩9,850")
+        #expect(Currency.krw.compactText(local: 120) == "₩120")
+    }
+
+    @Test func 엔화는_일본어_단위() {
+        #expect(Currency.jpy.compactText(local: 38_500) == "¥3.9万")
+        #expect(Currency.jpy.compactText(local: 2_000_000) == "¥200万")
+    }
+
+    @Test func 달러는_K와_M_단위() {
+        #expect(Currency.usd.compactText(local: 112_345) == "$112.3K")     // 비트코인 급
+        #expect(Currency.usd.compactText(local: 1_500_000) == "$1.5M")
+    }
+
+    @Test func 달러_1만_미만은_자릿수_단계별() {
+        #expect(Currency.usd.compactText(local: 1_234.56) == "$1,235")     // 1,000 이상 정수(천 단위 구분)
+        #expect(Currency.usd.compactText(local: 175.23) == "$175")         // 100 이상 정수
+        #expect(Currency.usd.compactText(local: 45.678) == "$45.7")        // 10 이상 소수 1자리
+        #expect(Currency.eur.compactText(local: 8.912) == "€8.91")         // 10 미만 소수 2자리
+    }
+
+    @Test func 음수는_기호_앞에_마이너스() {
+        #expect(Currency.usd.compactText(local: -12.5) == "-$12.5")
+    }
+
+    @Test func 반올림으로_다음_단위에_닿으면_단위를_올린다() {
+        #expect(Currency.usd.compactText(local: 999_950) == "$1M")          // 1000K가 아니라 1M
+        #expect(Currency.krw.compactText(local: 99_999_600) == "₩1억")      // 9999.96만 → 반올림 1만만 = 1억
+        #expect(Currency.usd.compactText(local: 999_940) == "$999.9K")      // 경계 직전은 그대로
+    }
+}
+
 // swiftlint:enable force_unwrapping

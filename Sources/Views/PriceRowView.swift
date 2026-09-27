@@ -2,7 +2,6 @@ import FOMOCore
 import MarketKit
 import SwiftUI
 import SwiftData
-import PhosphorSwift
 
 /// 종목 1개 = 여러 거래소 가격을 한 번에 보여주는 플랫 블록.
 struct PriceRowView: View {
@@ -99,8 +98,7 @@ struct PriceRowView: View {
             Haptics.tap()
             toggleTracking()
         } label: {
-            Ph.broadcast.bold
-                .color(tracking ? .white : Color(uiColor: .tertiaryLabel))
+            PhIcon(.broadcastBold, color: tracking ? .white : Color(uiColor: .tertiaryLabel))
                 .frame(width: 15, height: 15)
                 .frame(width: 30, height: 30)
                 .background(tracking ? AnyShapeStyle(Theme.accent) : AnyShapeStyle(Color.clear), in: Circle())
