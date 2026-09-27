@@ -167,6 +167,9 @@ private struct SortSheet: View {
     @Environment(PriceStore.self) private var store
     @Environment(\.dismiss) private var dismiss
     private var lang: AppLanguage { store.appLanguage }
+    /// 내용 높이를 재서 시트를 딱 그만큼만 연다 — 고정 높이(340)는 옵션 4개 아래에 여백이 남았다.
+    /// 옵션 수·다이나믹 타입이 바뀌어도 자동 대응. 첫 측정 전 프레임용 기본값만 둔다.
+    @State private var contentHeight: CGFloat = 300
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -180,9 +183,12 @@ private struct SortSheet: View {
                 if idx > 0 { Divider().padding(.leading, 56) }
                 row(option)
             }
-            Spacer(minLength: 0)
         }
-        .presentationDetents([.height(340)])
+        .padding(.bottom, 8)
+        .fixedSize(horizontal: false, vertical: true)
+        .frame(maxWidth: .infinity, alignment: .top)
+        .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { contentHeight = $0 }
+        .presentationDetents([.height(contentHeight)])
         .presentationDragIndicator(.visible)
     }
 
