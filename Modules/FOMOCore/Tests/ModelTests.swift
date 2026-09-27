@@ -170,6 +170,12 @@ struct CurrencyCompactTextTests {
     @Test func 음수는_기호_앞에_마이너스() {
         #expect(Currency.usd.compactText(local: -12.5) == "-$12.5")
     }
+
+    @Test func 반올림으로_다음_단위에_닿으면_단위를_올린다() {
+        #expect(Currency.usd.compactText(local: 999_950) == "$1M")          // 1000K가 아니라 1M
+        #expect(Currency.krw.compactText(local: 99_999_600) == "₩1억")      // 9999.96만 → 반올림 1만만 = 1억
+        #expect(Currency.usd.compactText(local: 999_940) == "$999.9K")      // 경계 직전은 그대로
+    }
 }
 
 // swiftlint:enable force_unwrapping

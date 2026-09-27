@@ -79,7 +79,9 @@ enum WK {
 
     /// "1.3%" / "-1.3%" — 소수 1자리, 양수 부호 생략(색이 방향을 보여줌). 확장 뷰의 "+1.23%"보다 두 글자 절약.
     static func compactPctText(_ pct: Double) -> String {
-        String(format: "%.1f%%", pct)
+        // -0.04 → "-0.0%"(파란 마이너스 0) 방지: 소수 1자리로 0이 되는 값은 부호 없이 0.0%
+        let rounded = (pct * 10).rounded() / 10
+        return String(format: "%.1f%%", rounded == 0 ? 0 : rounded)
     }
 }
 
