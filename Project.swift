@@ -23,8 +23,6 @@ let project = Project(
     packages: [
         .remote(url: "https://github.com/firebase/firebase-ios-sdk.git",
                 requirement: .upToNextMajor(from: "11.0.0")),
-        .remote(url: "https://github.com/phosphor-icons/swift",
-                requirement: .upToNextMajor(from: "2.0.0")),
     ],
     settings: .settings(base: baseSettings),
     targets: [
@@ -64,7 +62,6 @@ let project = Project(
                 .target(name: "FOMO24Widgets"),
                 .package(product: "FirebaseMessaging"),
                 .package(product: "FirebaseFirestore"),
-                .package(product: "PhosphorSwift"),
             ],
             settings: .settings(base: ["ASSETCATALOG_COMPILER_APPICON_NAME": "AppIcon"])
         ),
