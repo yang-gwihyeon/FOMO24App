@@ -61,7 +61,6 @@ let project = Project(
                 .target(name: "MarketKit"),
                 .target(name: "FOMO24Widgets"),
                 .package(product: "FirebaseMessaging"),
-                .package(product: "FirebaseFirestore"),
             ],
             settings: .settings(base: ["ASSETCATALOG_COMPILER_APPICON_NAME": "AppIcon"])
         ),

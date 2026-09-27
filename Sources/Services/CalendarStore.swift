@@ -1,7 +1,6 @@
 import FOMOCore
 import MarketKit
 import Foundation
-import FirebaseFirestore
 import Observation
 import SwiftUI
 
@@ -78,11 +77,11 @@ final class CalendarStore {
     /// 문서 형식: events = [{date:"yyyy-MM-dd", time:"HH:mm"?, title, icon, note?, type?}]
     /// time은 한국시간(KST) 기준.
     func load() async {
-        let db = Firestore.firestore()
+        let db = FirestoreREST.shared
         var events: [CalendarEvent] = []
         for doc in ["calendar", "calendarAuto"] {
-            guard let snap = try? await db.collection("config").document(doc).getDocument(),
-                  let raw = snap.data()?["events"] as? [[String: Any]] else { continue }
+            guard let data = await db.getDocumentCached("config/\(doc)"),
+                  let raw = data["events"] as? [[String: Any]] else { continue }
             events.append(contentsOf: raw.compactMap(Self.parse))
         }
         if !events.isEmpty {
@@ -99,7 +98,8 @@ final class CalendarStore {
         f.locale = Locale(identifier: "en_US_POSIX")
         f.timeZone = TimeZone(identifier: "Asia/Seoul")
         f.dateFormat = timeStr == nil ? "yyyy-MM-dd" : "yyyy-MM-dd HH:mm"
-        guard let date = f.date(from: timeStr == nil ? dateStr : "\(dateStr) \(timeStr!)") else { return nil }
+        let text = timeStr.map { "\(dateStr) \($0)" } ?? dateStr
+        guard let date = f.date(from: text) else { return nil }
         return CalendarEvent(
             id: "\(dateStr)_\(title)",
             date: date,

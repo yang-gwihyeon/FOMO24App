@@ -4,7 +4,6 @@ import Foundation
 import UIKit
 import FirebaseCore
 import FirebaseMessaging
-import FirebaseFirestore
 
 /// FOMO 알림 1건을 서버로 보낼 최소 정보.
 struct AlertRecord {
@@ -15,7 +14,7 @@ struct AlertRecord {
     let alertPct: Double
 }
 
-/// Firebase 연동 — FCM 토큰 수신 + FOMO 알림을 Firestore `alerts`에 동기화.
+/// Firebase 연동 — FCM 토큰 수신 + FOMO 알림을 Firestore `alerts`에 동기화 (REST, ADR-0009).
 /// 서버(Cloud Function)가 이 컬렉션을 읽어 가격 도달 시 푸시를 보낸다.
 @MainActor
 final class FirebaseSync: NSObject, MessagingDelegate {
@@ -50,27 +49,28 @@ final class FirebaseSync: NSObject, MessagingDelegate {
 
     private func sync() {
         guard let token = fcmToken else { return }   // 토큰 없으면 다음 기회에
-        let db = Firestore.firestore()
-        let col = db.collection("alerts")
+        let db = FirestoreREST.shared
 
         let active = latest.filter { $0.alertPct > 0 }
         let activeUUIDs = Set(active.map(\.uuid))
         let previous = Set(UserDefaults.standard.stringArray(forKey: Self.syncedKey) ?? [])
 
         // 이전에 올렸지만 지금은 없는(삭제됐거나 알림 끈) 문서 정리
+        // 실패는 무시 — 다음 목록 변경/앱 활성화 때 다시 전체 동기화된다
         for uuid in previous.subtracting(activeUUIDs) {
-            col.document("\(token)_\(uuid)").delete()
+            Task { try? await db.deleteDocument("alerts/\(token)_\(uuid)") }
         }
         // 현재 켜져 있는 알림 반영 — hasAlerted는 서버가 관리하므로 merge
         for r in active {
-            col.document("\(token)_\(r.uuid)").setData([
+            let fields: [String: any Sendable] = [
                 "fcmToken": token,
                 "ticker": r.ticker,
                 "name": r.name,
                 "savedPrice": r.savedPrice,
                 "alertPct": r.alertPct,
                 "lang": AppLanguage.current == .ko ? "ko" : "en"   // 푸시 문구 언어
-            ], merge: true)
+            ]
+            Task { try? await db.setDocument("alerts/\(token)_\(r.uuid)", data: fields, merge: true) }
         }
         UserDefaults.standard.set(Array(activeUUIDs), forKey: Self.syncedKey)
     }
@@ -83,11 +83,11 @@ final class FirebaseSync: NSObject, MessagingDelegate {
             fcmToken = try? await Messaging.messaging().token()
         }
         guard let token = fcmToken, !uuids.isEmpty else { return [] }
-        let col = Firestore.firestore().collection("alerts")
+        let db = FirestoreREST.shared
         var fired: [String] = []
         for uuid in uuids {
-            if let doc = try? await col.document("\(token)_\(uuid)").getDocument(),
-               doc.data()?["hasAlerted"] as? Bool == true {
+            if let doc = try? await db.getDocument("alerts/\(token)_\(uuid)"),
+               doc["hasAlerted"] as? Bool == true {
                 fired.append(uuid)
             }
         }
