@@ -50,9 +50,10 @@ git tag v1.2 && git push origin v1.2   # → 아카이브 → TestFlight 자동 
 ## 지표
 | 항목 | 값 | 갱신 |
 |---|---|---|
-| 모듈 유닛테스트 | 27 (Swift Testing, 네트워크 0) | 2026-09-12 |
-| SwiftLint 위반 | 24 (error 5) — 도입 시 기준선 | 2026-09-12 |
+| 모듈 유닛테스트 | 50 (Swift Testing, 네트워크 0) | 2026-09-28 |
+| SwiftLint 위반 | 19 (error, 기존 기준선 24) | 2026-09-28 |
 | 성능 기준선 | 미측정 → [B0 체크리스트](docs/perf/README.md) | — |
+| 앱 용량 (Release 기기 빌드) | 195 MB → **6.8 MB** ([ADR-0008](docs/adr/0008-drop-phosphor.md) · [ADR-0009](docs/adr/0009-drop-firestore-sdk.md) · [perf 카드](docs/perf/2026-09-28-app-size.md)) | 2026-09-28 |
 | CI 시간 | 11m30s (macOS 러너, 테스트+빌드 단일 잡, SPM 캐시 miss) — 기준선 | 2026-09-13 |
 
 ## 폴더

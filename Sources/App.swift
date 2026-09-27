@@ -112,6 +112,8 @@ struct RootTabView: View {
         // 앱이 켜질 때 개장 알림 재예약 + 서버 동기화
         .onChange(of: scenePhase, initial: true) { _, phase in
             if phase == .active {
+                // 강제 업데이트 플래그 재확인 (실시간 리스너 대신 포그라운드 진입 시 폴링)
+                UpdateGate.shared.refresh()
                 // 백그라운드 사이 시스템이 내린 라이브 액티비티를 앱 상태에 반영
                 LiveActivityManager.shared.restore()
                 Task {
