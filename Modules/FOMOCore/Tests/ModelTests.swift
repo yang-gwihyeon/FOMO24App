@@ -161,14 +161,14 @@ struct CurrencyCompactTextTests {
     }
 
     @Test func 달러_1만_미만은_자릿수_단계별() {
-        #expect(Currency.usd.compactText(local: 1_234.56) == "$1,235")     // 1,000 이상 정수
-        #expect(Currency.usd.compactText(local: 175.23) == "$175.2")       // 100 이상 소수 1자리
-        #expect(Currency.usd.compactText(local: 45.678) == "$45.68")       // 그 외 소수 2자리
-        #expect(Currency.eur.compactText(local: 99.5) == "€99.50")
+        #expect(Currency.usd.compactText(local: 1_234.56) == "$1,235")     // 1,000 이상 정수(천 단위 구분)
+        #expect(Currency.usd.compactText(local: 175.23) == "$175")         // 100 이상 정수
+        #expect(Currency.usd.compactText(local: 45.678) == "$45.7")        // 10 이상 소수 1자리
+        #expect(Currency.eur.compactText(local: 8.912) == "€8.91")         // 10 미만 소수 2자리
     }
 
     @Test func 음수는_기호_앞에_마이너스() {
-        #expect(Currency.usd.compactText(local: -12.5) == "-$12.50")
+        #expect(Currency.usd.compactText(local: -12.5) == "-$12.5")
     }
 }
 

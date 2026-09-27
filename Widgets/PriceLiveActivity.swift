@@ -50,13 +50,13 @@ struct PriceLiveActivity: Widget {
             } compactTrailing: {
                 // 가격 + 등락률 한 줄. 컴팩트 영역은 양쪽 합쳐 10자 안팎이라 가격은 축약(₩24.9만·$112.3K),
                 // 등락률은 소수 1자리. 티커는 리딩에 유지 — 여러 종목 추적 시 식별용.
-                HStack(spacing: 3) {
+                HStack(spacing: 2) {
                     Text(WK.compactPriceText(usd: context.state.price, in: context.attributes))
-                        .font(.system(size: 11, weight: .bold, design: .rounded))
+                        .font(.system(size: 10, weight: .bold, design: .rounded))
                         .monospacedDigit()
                         .lineLimit(1)
                     Text(WK.compactPctText(context.state.changePct))
-                        .font(.system(size: 11, weight: .bold))
+                        .font(.system(size: 10, weight: .bold))
                         .monospacedDigit()
                         .foregroundStyle(WK.changeColor(context.state.changePct >= 0))
                         .lineLimit(1)

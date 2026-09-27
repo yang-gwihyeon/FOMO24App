@@ -80,7 +80,7 @@ public enum Currency: String, CaseIterable, Identifiable, Sendable {
 
     /// 다이나믹 아일랜드 컴팩트 뷰용 축약 가격 (기호 포함).
     /// 컴팩트 영역은 양쪽 합쳐 10자 안팎이라 큰 수는 통화 언어의 단위로 줄인다.
-    ///   ₩248,900 → "₩24.9만", ¥38,500 → "¥3.9万", $112,345 → "$112.3K", $175.23 → "$175.2", $45.67 → "$45.67"
+    ///   ₩248,900 → "₩24.9만", ¥38,500 → "¥3.9万", $112,345 → "$112.3K", $1,234.5 → "$1,235", $175.23 → "$175", $45.67 → "$45.7", $8.912 → "$8.91"
     /// 단위는 기기 로케일이 아니라 **통화**를 따른다 — ₩에 K, $에 만이 붙는 어색함을 피하고 테스트를 결정적으로 만들기 위해.
     public func compactText(local: Double) -> String {
         let abs = Swift.abs(local)
@@ -104,9 +104,10 @@ public enum Currency: String, CaseIterable, Identifiable, Sendable {
             body = oneDecimal(abs / bigUnit) + big
         } else if abs >= threshold {
             body = oneDecimal(abs / smallUnit) + small
-        } else if abs >= 1000 || fractionDigits == 0 {
+        } else if abs >= 100 || fractionDigits == 0 {
+            // 100 이상은 소수점 제거 — 컴팩트 아일랜드는 글자 1개가 곧 폭. "$175.2"보다 "$175"
             body = Self.groupedFormatter.string(from: NSNumber(value: abs)) ?? String(Int(abs))
-        } else if abs >= 100 {
+        } else if abs >= 10 {
             body = String(format: "%.1f", abs)
         } else {
             body = String(format: "%.2f", abs)

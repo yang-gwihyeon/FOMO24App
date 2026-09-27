@@ -77,9 +77,9 @@ enum WK {
         attributes.currency.compactText(local: attributes.localPrice(usd: usd))
     }
 
-    /// "+1.3%" — 확장 뷰의 2자리("+1.23%")보다 한 글자 절약.
+    /// "1.3%" / "-1.3%" — 소수 1자리, 양수 부호 생략(색이 방향을 보여줌). 확장 뷰의 "+1.23%"보다 두 글자 절약.
     static func compactPctText(_ pct: Double) -> String {
-        String(format: "%@%.1f%%", pct >= 0 ? "+" : "", pct)
+        String(format: "%.1f%%", pct)
     }
 }
 
