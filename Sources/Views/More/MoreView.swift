@@ -91,7 +91,9 @@ struct MoreView: View {
                     Link(destination: URL(string: "mailto:didrnlgus9071@gmail.com")!) {
                         Label(lang.t("문의하기", "Contact Us"), systemImage: "envelope")
                     }
-                    LabeledContent(lang.t("버전", "Version"), value: "1.0")
+                    // 하드코딩 금지 — CI가 태그에서 주입하는 실제 번들 버전을 표시
+                    LabeledContent(lang.t("버전", "Version"),
+                                   value: Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "—")
                 }
 
                 Section {

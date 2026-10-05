@@ -3,7 +3,6 @@ import MarketKit
 import Foundation
 import ActivityKit
 import Observation
-import FirebaseFirestore
 
 /// 다이나믹 아일랜드 실시간 가격 추적 관리.
 /// 앱이 포그라운드일 때 5초 폴링에 맞춰 갱신되고, 백그라운드로 가도
@@ -36,7 +35,7 @@ final class LiveActivityManager {
         for ticker in activities.keys where aliveByTicker[ticker] == nil {
             activities[ticker] = nil
             if let token = pushTokens.removeValue(forKey: ticker) {
-                Firestore.firestore().collection("laTokens").document(token).delete()
+                Task { try? await FirestoreREST.shared.deleteDocument("laTokens/\(token)") }
             }
         }
         // 시스템에는 있는데 앱이 모르는 액티비티는 채택
@@ -60,7 +59,7 @@ final class LiveActivityManager {
                     self.activities[ticker] = nil
                     self.trackedTickers.remove(ticker)
                     if let token = self.pushTokens.removeValue(forKey: ticker) {
-                        try? await Firestore.firestore().collection("laTokens").document(token).delete()
+                        try? await FirestoreREST.shared.deleteDocument("laTokens/\(token)")
                     }
                 }
             }
@@ -104,7 +103,8 @@ final class LiveActivityManager {
         }
     }
 
-    /// 액티비티의 push 토큰을 Firestore에 등록 (회전 시 갱신) — 서버 푸시용.
+    /// 액티비티의 push 토큰을 Firestore `laTokens`에 등록 (회전 시 갱신) — 서버 푸시용.
+    /// startedAt은 서버 타임스탬프 대신 기기 시각 — 서버는 8.5시간 초과 판정에만 쓰므로 시계 오차 허용.
     private func syncPushToken(for activity: Activity<PriceActivityAttributes>) {
         let ticker = activity.attributes.ticker
         Task {
@@ -112,13 +112,13 @@ final class LiveActivityManager {
                 let token = tokenData.map { String(format: "%02x", $0) }.joined()
                 let old = pushTokens[ticker]
                 pushTokens[ticker] = token
-                let col = Firestore.firestore().collection("laTokens")
-                if let old, old != token { try? await col.document(old).delete() }
-                try? await col.document(token).setData([
+                let db = FirestoreREST.shared
+                if let old, old != token { try? await db.deleteDocument("laTokens/\(old)") }
+                try? await db.setDocument("laTokens/\(token)", data: [
                     "token": token,
                     "ticker": ticker,
-                    "startedAt": FieldValue.serverTimestamp()
-                ])
+                    "startedAt": Date.now
+                ], merge: false)
             }
         }
     }
@@ -130,7 +130,7 @@ final class LiveActivityManager {
         activities[ticker] = nil
         trackedTickers.remove(ticker)
         if let token = pushTokens.removeValue(forKey: ticker) {
-            Firestore.firestore().collection("laTokens").document(token).delete()
+            Task { try? await FirestoreREST.shared.deleteDocument("laTokens/\(token)") }
         }
         // Activity는 non-Sendable이지만 ActivityKit API는 어느 컨텍스트에서든 호출 가능
         nonisolated(unsafe) let act = activity

@@ -4,8 +4,8 @@ import ProjectDescription
 let teamID = "33YSUT6XZ3"
 // 릴리즈 CI가 태그에서 버전을 주입: v1.1 푸시 → TUIST_MARKETING_VERSION=1.1,
 // TUIST_BUILD_NUMBER=<GitHub run number>. 로컬 빌드는 아래 기본값 사용.
-let marketingVersion = Environment.marketingVersion.getString(default: "1.2")
-let buildNumber = Environment.buildNumber.getString(default: "6")
+let marketingVersion = Environment.marketingVersion.getString(default: "1.3")
+let buildNumber = Environment.buildNumber.getString(default: "7")
 let baseSettings: SettingsDictionary = [
     "DEVELOPMENT_TEAM": .string(teamID),
     "CODE_SIGN_STYLE": "Automatic",
@@ -61,7 +61,6 @@ let project = Project(
                 .target(name: "MarketKit"),
                 .target(name: "FOMO24Widgets"),
                 .package(product: "FirebaseMessaging"),
-                .package(product: "FirebaseFirestore"),
             ],
             settings: .settings(base: ["ASSETCATALOG_COMPILER_APPICON_NAME": "AppIcon"])
         ),
