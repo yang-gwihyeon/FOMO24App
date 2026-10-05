@@ -1,7 +1,6 @@
 import FOMOCore
 import MarketKit
 import SwiftUI
-import PhosphorSwift
 
 /// FOMO 기록 한 건. 좌측 컬러 스트라이프(포모=빨강 / 역포모=파랑)로 감정을 한눈에.
 /// 획일적 카드가 아니라 시그니처 있는 행.
@@ -78,8 +77,7 @@ struct FomoRowView: View {
         let on = entry.alertPct > 0
         return Button(action: onBellTap) {
             HStack(spacing: 3) {
-                (on ? Ph.bellSimpleRinging.fill : Ph.bellSimple.bold)
-                    .color(on ? Theme.accent : Color.secondary)
+                PhIcon(on ? .bellSimpleRingingFill : .bellSimpleBold, color: on ? Theme.accent : Color.secondary)
                     .frame(width: 11, height: 11)
                 Text(on ? "±\(Int(entry.alertPct))%" : lang.t("알림", "Alert"))
                     .font(.pd(10, .semibold, relativeTo: .caption2))
@@ -96,8 +94,7 @@ struct FomoRowView: View {
     private var priceRow: some View {
         HStack(spacing: 0) {
             labeledPrice(lang.thenLabel, store.formatted(entry.savedPriceUSD), .secondary)
-            Ph.arrowRight.bold
-                .color(Color(uiColor: .tertiaryLabel))
+            PhIcon(.arrowRightBold, color: Color(uiColor: .tertiaryLabel))
                 .frame(width: 12, height: 12)
                 .padding(.horizontal, 12)
             labeledPrice(lang.nowLabel, currentUSD.map { store.formatted($0) } ?? "—", .primary)

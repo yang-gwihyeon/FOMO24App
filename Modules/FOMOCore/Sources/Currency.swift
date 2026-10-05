@@ -77,4 +77,56 @@ public enum Currency: String, CaseIterable, Identifiable, Sendable {
         case .perUnit: return usd / rate  // EUR, GBP
         }
     }
+
+    /// 다이나믹 아일랜드 컴팩트 뷰용 축약 가격 (기호 포함).
+    /// 컴팩트 영역은 양쪽 합쳐 10자 안팎이라 큰 수는 통화 언어의 단위로 줄인다.
+    ///   ₩248,900 → "₩24.9만", ¥38,500 → "¥3.9万", $112,345 → "$112.3K", $1,234.5 → "$1,235", $175.23 → "$175", $45.67 → "$45.7", $8.912 → "$8.91"
+    /// 단위는 기기 로케일이 아니라 **통화**를 따른다 — ₩에 K, $에 만이 붙는 어색함을 피하고 테스트를 결정적으로 만들기 위해.
+    public func compactText(local: Double) -> String {
+        let magnitude = Swift.abs(local)
+        let sign = local < 0 ? "-" : ""
+        let (big, small): (String, String) = {
+            switch language {
+            case .ko: return ("억", "만")
+            case .ja: return ("億", "万")
+            case .en: return ("M", "K")
+            }
+        }()
+        let (bigUnit, smallUnit): (Double, Double) = language == .en ? (1_000_000, 1_000) : (100_000_000, 10_000)
+        // 축약 임계값: 한/일 통화는 1만, 달러계는 1만(달러 4자리까지는 원문 유지 — "$1,234"가 "$1.2K"보다 정확)
+        let threshold: Double = 10_000
+        /// 소수 1자리 반올림, ".0" 제거. 반올림 결과가 다음 단위에 닿으면(예: 999.95K → 1000K) nil을 돌려 호출부가 단위를 올린다.
+        func oneDecimal(_ v: Double, limit: Double) -> String? {
+            let rounded = (v * 10).rounded() / 10
+            guard rounded < limit else { return nil }
+            let s = String(format: "%.1f", rounded)
+            return s.hasSuffix(".0") ? String(s.dropLast(2)) : s
+        }
+        let body: String
+        if magnitude >= bigUnit, magnitude >= threshold {
+            body = (oneDecimal(magnitude / bigUnit, limit: .infinity) ?? "0") + big
+        } else if magnitude >= threshold, let s = oneDecimal(magnitude / smallUnit, limit: bigUnit / smallUnit) {
+            body = s + small
+        } else if magnitude >= threshold {
+            body = "1" + big                     // 999.95K 같은 경계값 → 1M / 1억
+        } else if magnitude >= 100 || fractionDigits == 0 {
+            // 100 이상은 소수점 제거 — 컴팩트 아일랜드는 글자 1개가 곧 폭. "$175.2"보다 "$175"
+            body = Self.groupedFormatter.string(from: NSNumber(value: magnitude)) ?? String(Int(magnitude))
+        } else if magnitude >= 10 {
+            body = String(format: "%.1f", magnitude)
+        } else {
+            body = String(format: "%.2f", magnitude)
+        }
+        return sign + symbol + body
+    }
+
+    // 뷰 바디에서 포매터를 만들지 않도록 고정 캐시 (CODE_REVIEW.md §7)
+    private static let groupedFormatter: NumberFormatter = {
+        let f = NumberFormatter()
+        f.numberStyle = .decimal
+        f.maximumFractionDigits = 0
+        f.locale = Locale(identifier: "en_US")         // 천 단위 구분자 ","로 고정 (POSIX 로케일은 구분자가 비어 있음)
+        f.usesGroupingSeparator = true
+        return f
+    }()
 }

@@ -2,7 +2,6 @@ import FOMOCore
 import MarketKit
 import SwiftUI
 import SwiftData
-import PhosphorSwift
 
 /// FOMO 트래커 탭 — "샀다 치고" 기록 목록.
 struct FomoView: View {
@@ -36,8 +35,7 @@ struct FomoView: View {
                         Haptics.tap()
                         showingAdd = true
                     } label: {
-                        Ph.plusCircle.fill
-                            .color(Theme.accent)
+                        PhIcon(.plusCircleFill, color: Theme.accent)
                             .frame(width: 26, height: 26)
                     }
                 }
@@ -126,8 +124,7 @@ struct FomoView: View {
 
     private var emptyState: some View {
         VStack(spacing: 16) {
-            Ph.heartbeat.duotone
-                .color(Theme.accent)
+            PhIcon(.heartbeatDuotone, color: Theme.accent)
                 .frame(width: 64, height: 64)
             Text(lang.fomoEmptyText)
                 .font(.pd(14, .regular, relativeTo: .subheadline))
@@ -138,7 +135,7 @@ struct FomoView: View {
                 showingAdd = true
             } label: {
                 HStack(spacing: 6) {
-                    Ph.plus.bold.color(.white).frame(width: 14, height: 14)
+                    PhIcon(.plusBold, color: .white).frame(width: 14, height: 14)
                     Text(lang.t("기록 추가", "Add Entry"))
                 }
                     .font(.pd(14, .semibold, relativeTo: .subheadline))
