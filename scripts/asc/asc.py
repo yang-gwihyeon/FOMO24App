@@ -90,7 +90,7 @@ def app_id(env):
 
 def list_builds(env, aid, version=None, limit=10):
     params = {"filter[app]": aid, "sort": "-uploadedDate", "limit": limit,
-              "fields[builds]": "version,uploadedDate,processingState,expired,usesNonExemptEncryption",
+              "fields[builds]": "version,uploadedDate,processingState,expired,usesNonExemptEncryption,preReleaseVersion",
               "include": "preReleaseVersion", "fields[preReleaseVersions]": "version"}
     if version:
         params["filter[preReleaseVersion.version]"] = version
@@ -98,7 +98,7 @@ def list_builds(env, aid, version=None, limit=10):
     pre = {i["id"]: i["attributes"]["version"] for i in r.get("included", []) if i["type"] == "preReleaseVersions"}
     out = []
     for b in r["data"]:
-        rel = b["relationships"].get("preReleaseVersion", {}).get("data") or {}
+        rel = b.get("relationships", {}).get("preReleaseVersion", {}).get("data") or {}
         a = b["attributes"]
         out.append({"id": b["id"], "build": a["version"], "version": pre.get(rel.get("id"), "?"),
                     "state": a["processingState"], "uploaded": (a.get("uploadedDate") or "")[:16], "expired": a.get("expired")})

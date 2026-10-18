@@ -8,7 +8,7 @@ BEAUTIFY    := $(shell command -v xcbeautify >/dev/null 2>&1 && echo "| xcbeauti
 # 시뮬레이터는 이름 매칭이 모호할 수 있어 UDID로 고정 (CI와 동일 방식)
 SIM_UDID    := $(shell xcrun simctl list devices available | grep iPhone | grep -m1 -oE '[0-9A-F-]{36}')
 
-.PHONY: help generate test build lint lint-fix format format-check ci clean secrets perf-baseline
+.PHONY: help generate test build lint lint-fix format format-check ci clean secrets perf-baseline status ship smoke
 
 help: ## 타깃 목록
 	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN{FS=":.*?## "}{printf "  \033[36m%-14s\033[0m %s\n", $$1, $$2}'
@@ -49,6 +49,9 @@ secrets: ## 스테이징된 diff에서 키·토큰 패턴 검사
 	@scripts/check-secrets.sh
 
 ci: lint format-check test build ## CI와 동일 순서 전체 실행
+
+smoke: generate ## UI 스모크 테스트 (4탭 순회 + 스크린샷 → build/smoke/)
+	@scripts/smoke.sh
 
 status: ## PR·CI·릴리즈·TestFlight 상태 한 줄 요약 (scripts/status.sh)
 	@scripts/status.sh
