@@ -20,3 +20,9 @@ build/
 # Swift Package Manager
 .swiftpm/
 .build/
+
+# 로컬 ASC API 키·환경 (scripts/asc) — 절대 커밋 금지
+.env
+*.p8
+AuthKey_*
+__pycache__/

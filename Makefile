@@ -50,6 +50,12 @@ secrets: ## 스테이징된 diff에서 키·토큰 패턴 검사
 
 ci: lint format-check test build ## CI와 동일 순서 전체 실행
 
+status: ## PR·CI·릴리즈·TestFlight 상태 한 줄 요약 (scripts/status.sh)
+	@scripts/status.sh
+
+ship: ## TestFlight 빌드 트리거: make ship V=1.5 (태그 없이) / make ship V=1.5 TAG=1 (최종 태그)
+	@scripts/ship.sh $(V) $(if $(TAG),--tag,)
+
 perf-baseline: generate ## 성능 기준선 측정 안내 (docs/perf/README.md)
 	@echo "docs/perf/README.md 의 B0 체크리스트를 따라 Instruments로 측정하고 결과를 docs/perf/ 에 기록하세요."
 	@open -a Instruments || true
