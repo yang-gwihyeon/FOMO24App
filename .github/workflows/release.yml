@@ -1,10 +1,18 @@
 name: Release (TestFlight)
 
-# v1.1 형식 태그 푸시 → 아카이브 → TestFlight 자동 업로드
-# 사용법: git tag v1.1 && git push origin v1.1
+# 두 가지 트리거 → 아카이브 → TestFlight 자동 업로드
+#  1) v1.1 형식 태그 푸시: git tag v1.1 && git push origin v1.1  (최종 릴리즈)
+#  2) 수동 실행(version 입력): gh workflow run release.yml -f version=1.1  (테스트 빌드 — 태그 없이)
+# 빌드 번호는 항상 run_number → 같은 버전으로 여러 번 올려도 충돌 없음
 on:
   push:
     tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "마케팅 버전 (예: 1.5) — 태그 없이 TestFlight 빌드"
+        required: true
+        type: string
 
 jobs:
   testflight:
@@ -30,8 +38,10 @@ jobs:
       - name: 버전 주입 + 프로젝트 생성 (태그 v1.1 → 1.1)
         env:
           TUIST_BUILD_NUMBER: ${{ github.run_number }}
+          INPUT_VERSION: ${{ inputs.version }}
         run: |
-          export TUIST_MARKETING_VERSION="${GITHUB_REF_NAME#v}"
+          # 수동 실행이면 입력값, 태그 푸시면 태그(v 제거)
+          export TUIST_MARKETING_VERSION="${INPUT_VERSION:-${GITHUB_REF_NAME#v}}"
           echo "MARKETING_VERSION=$TUIST_MARKETING_VERSION, BUILD=$TUIST_BUILD_NUMBER"
           tuist install 2>/dev/null || true
           tuist generate --no-open

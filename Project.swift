@@ -95,6 +95,16 @@ let project = Project(
             sources: ["Modules/MarketKit/Tests/**"],
             dependencies: [.target(name: "MarketKit")]
         ),
+        // MARK: UI 스모크 테스트 — 앱을 띄워 4탭 순회 + 스크린샷 (make smoke, 원격 파이프라인의 "내가 돌려본" 증거)
+        .target(
+            name: "FOMO24UITests",
+            destinations: .iOS,
+            product: .uiTests,
+            bundleId: "com.yang.FOMO24.UITests",
+            deploymentTargets: .iOS("17.0"),
+            sources: ["UITests/**"],
+            dependencies: [.target(name: "FOMO24")]
+        ),
     ],
     schemes: [
         .scheme(
@@ -102,6 +112,13 @@ let project = Project(
             shared: true,
             buildAction: .buildAction(targets: ["FOMO24"]),
             testAction: .targets(["FOMOCoreTests", "MarketKitTests"]),
+            runAction: .runAction(executable: "FOMO24")
+        ),
+        .scheme(
+            name: "UISmoke",
+            shared: true,
+            buildAction: .buildAction(targets: ["FOMO24", "FOMO24UITests"]),
+            testAction: .targets(["FOMO24UITests"]),
             runAction: .runAction(executable: "FOMO24")
         ),
         .scheme(

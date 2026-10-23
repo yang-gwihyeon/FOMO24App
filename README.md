@@ -31,6 +31,9 @@ brew install tuist xcbeautify swiftlint swiftformat
 make generate   # GoogleService-Info.plist 없으면 CI용 더미 자동 복사
 make test       # FOMOCore + MarketKit 유닛테스트
 make ci         # lint + format-check + test + build (CI와 동일)
+make smoke      # UI 스모크 테스트 (4탭 순회 + 스크린샷)
+make status     # PR·CI·TestFlight·심사 상태 요약
+make ship V=1.5 # CI → TestFlight (태그 없이; TAG=1 이면 v1.5 태그)
 ```
 `make help`로 전체 타깃 확인. 실제 Firebase 키는 커밋하지 않는다 (`scripts/check-secrets.sh`가 커밋 전 검사).
 
@@ -44,6 +47,7 @@ git tag v1.2 && git push origin v1.2   # → 아카이브 → TestFlight 자동 
 - 모든 PR은 6칸 카드(관찰·가설·선택지·결정·측정·배운 것)를 채운다 — [PR 템플릿](.github/pull_request_template.md).
 - 성능 변경은 측정이 먼저 — [docs/perf](docs/perf/README.md).
 - 아키텍처 결정은 ADR — [docs/adr](docs/adr/README.md).
+- 폰(Discord)에서 요청 → PR → TestFlight → 심사 준비까지의 원격 루프 — [docs/REMOTE_PIPELINE.md](docs/REMOTE_PIPELINE.md) ([ADR-0010](docs/adr/0010-remote-pipeline.md)).
 - AI 에이전트(Claude Code)는 선택지·초안·리뷰를 맡고, 기준·결정·측정은 사람이 — [ADR-0005](docs/adr/0005-ai-collaboration.md), [AI 워크플로](docs/AI_WORKFLOW.md).
 - 리뷰 규칙 원문: [CODE_REVIEW.md](CODE_REVIEW.md) · AI 작업 지침: [CLAUDE.md](CLAUDE.md).
 
