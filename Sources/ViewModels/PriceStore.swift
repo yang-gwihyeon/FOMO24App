@@ -11,6 +11,8 @@ final class PriceStore {
     private(set) var tickers: [String] = []          // 사용 가능한 종목 (Catalog 순서)
     private(set) var fxRates: [String: Double] = [:]
     private(set) var lastUpdated: Date?
+    /// FOMO 탭 상단 쇼케이스 카드 (원격 구성 `config/fomoShowcase`, 뷰에서 최대 2장 표시)
+    private(set) var showcaseItems: [ShowcaseItem] = []
 
     // 상태
     enum Phase: Equatable { case idle, loading, loaded, failed(String) }
@@ -123,6 +125,11 @@ final class PriceStore {
             }
             return result
         }
+    }
+
+    /// 원격 쇼케이스 구성 적용 (RootTabView가 포그라운드 진입 시 로드).
+    func applyShowcase(_ items: [ShowcaseItem]) {
+        showcaseItems = items
     }
 
     // MARK: - 종목별 조회

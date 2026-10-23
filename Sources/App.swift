@@ -121,6 +121,10 @@ struct RootTabView: View {
                     await CatalogConfigService.load()
                 }
                 Task {
+                    // FOMO 탭 쇼케이스 카드(config/fomoShowcase) 반영 — 문서 없으면 섹션 숨김
+                    store.applyShowcase(await ShowcaseConfigService.load())
+                }
+                Task {
                     // 원격 시장시간(config/marketSessions) 반영 후 알림 재예약
                     await MarketConfigService.load()
                     let ids = AlertSettings.enabledOpenIDs

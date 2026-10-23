@@ -22,7 +22,15 @@ struct FomoView: View {
             ZStack {
                 Theme.page.ignoresSafeArea()
                 if entries.isEmpty {
-                    emptyState
+                    // 기록이 없어도 쇼케이스는 보여준다 — 추가 전의 유저를 혹하게 하는 훅
+                    VStack(spacing: 0) {
+                        FomoShowcaseRow()
+                            .padding(.horizontal, 20)
+                            .padding(.top, 8)
+                        Spacer()
+                        emptyState
+                        Spacer()
+                    }
                 } else {
                     list
                 }
@@ -69,6 +77,10 @@ struct FomoView: View {
     private var list: some View {
         // List = 셀 재사용 + 네이티브 스와이프 액션
         List {
+            FomoShowcaseRow()
+                .listRowSeparator(.hidden)
+                .listRowBackground(Color.clear)
+                .listRowInsets(EdgeInsets(top: 8, leading: 20, bottom: 5, trailing: 20))
             ForEach(entries) { entry in
                 FomoRowView(entry: entry, onBellTap: {
                     Haptics.tap()
