@@ -231,7 +231,7 @@ def cmd_screenshots(env, a):
     if not files or len(files) > 10:
         sys.exit(f"✗ 스크린샷 1~10장 필요 (현재 {len(files)}장)")
     sets = call(env, "GET", f"/appStoreVersionLocalizations/{loc['id']}/appScreenshotSets",
-                params={"fields[appScreenshotSets]": "screenshotDisplayType", "include": "appScreenshots"})
+                params={"fields[appScreenshotSets]": "screenshotDisplayType,appScreenshots", "include": "appScreenshots"})
     sset = next((s for s in sets["data"] if s["attributes"]["screenshotDisplayType"] == dtype), None)
     if sset:
         for shot in sset["relationships"].get("appScreenshots", {}).get("data", []):
