@@ -18,6 +18,9 @@ struct CurrencyPicker: View {
                             // 애니메이션 diff 대상이 되어 탭 직후 프레임이 밀린다.
                             store.selectedCurrency = currency
                         }
+                        // onTapGesture는 VoiceOver에 버튼으로 안 잡힘 — 역할·선택 상태를 명시
+                        .accessibilityElement(children: .combine)
+                        .accessibilityAddTraits(store.selectedCurrency == currency ? [.isButton, .isSelected] : .isButton)
                 }
             }
             .padding(.horizontal, 20)

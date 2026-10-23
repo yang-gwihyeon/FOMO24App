@@ -75,7 +75,14 @@ struct FomoRowView: View {
     /// 항상 보이는 알림 설정 버튼 — 켜짐: 파란 벨+%, 꺼짐: 회색 벨+"알림".
     private var bellButton: some View {
         let on = entry.alertPct > 0
-        return Button(action: onBellTap) {
+        return bellButtonBody(on: on)
+            .accessibilityLabel(lang.t("가격 알림", "Price alert"))
+            .accessibilityValue(on ? "±\(Int(entry.alertPct))%" : lang.t("꺼짐", "Off"))
+            .accessibilityHint(lang.t("목표 등락률 설정", "Set a target change"))
+    }
+
+    private func bellButtonBody(on: Bool) -> some View {
+        Button(action: onBellTap) {
             HStack(spacing: 3) {
                 PhIcon(on ? .bellSimpleRingingFill : .bellSimpleBold, color: on ? Theme.accent : Color.secondary)
                     .frame(width: 11, height: 11)

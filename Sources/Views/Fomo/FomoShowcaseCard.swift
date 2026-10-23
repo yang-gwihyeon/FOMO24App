@@ -41,6 +41,7 @@ struct FomoShowcaseCard: View {
             RoundedRectangle(cornerRadius: 14, style: .continuous)
                 .strokeBorder(color.opacity(0.35), lineWidth: 1)
         )
+        .accessibilityElement(children: .combine)   // VoiceOver: 카드 1장을 한 문장으로
     }
 }
 

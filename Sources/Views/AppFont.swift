@@ -8,6 +8,8 @@ import UIKit
 /// (토스·업비트 등 한국 앱의 시그니처 폰트 — "AI 기본 폰트" 티를 벗는 핵심)
 enum AppFont {
     /// 앱 시작 시 1회 등록. 시스템 폰트가 아니라 번들 폰트를 쓰기 위함.
+    /// UIKit appearance 프록시는 메인 액터 전용 — App.init(메인 액터)에서 호출한다.
+    @MainActor
     static func register() {
         let names = ["Pretendard-Regular", "Pretendard-Medium", "Pretendard-SemiBold", "Pretendard-Bold"]
         for name in names {
@@ -18,6 +20,7 @@ enum AppFont {
     }
 
     /// 내비게이션/탭바 타이틀도 Pretendard로 (전역 일관성).
+    @MainActor
     private static func configureBars() {
         #if canImport(UIKit)
         guard let large = UIFont(name: "Pretendard-Bold", size: 32),
