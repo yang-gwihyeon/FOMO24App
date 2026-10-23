@@ -105,6 +105,9 @@ struct PriceRowView: View {
                 .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+        .accessibilityLabel(tracking ? lang.t("실시간 추적 중지", "Stop live tracking")
+                                     : lang.t("실시간 추적 시작", "Start live tracking"))
+        .accessibilityHint(lang.t("다이나믹 아일랜드에 \(ticker) 가격 표시", "Shows \(ticker) price in the Dynamic Island"))
     }
 
     // MARK: 거래소별 한 줄
@@ -150,6 +153,9 @@ struct PriceRowView: View {
                 .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+        .accessibilityLabel(lang.t("FOMO 기록 추가", "Add FOMO entry"))
+        .accessibilityValue(justAdded ? lang.t("추가됨", "Added") : "")
+        .accessibilityHint(lang.t("지금 가격으로 샀다 치고 기록", "Records a what-if purchase at the current price"))
     }
 
     private func recordFomo() {

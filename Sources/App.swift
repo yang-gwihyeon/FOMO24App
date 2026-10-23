@@ -96,10 +96,11 @@ struct RootTabView: View {
             #if DEBUG
             // 스크린샷 자동화용: -seedDemo YES 로 실행하면 데모 What-if 항목 삽입 (DEBUG 전용)
             if UserDefaults.standard.bool(forKey: "seedDemo") && fomoEntries.isEmpty {
+                let daysAgo = { (n: Int) in Calendar.current.date(byAdding: .day, value: -n, to: .now) ?? .now }
                 let demo: [(String, Double, Date)] = [
-                    ("NVDA", 175.00, Calendar.current.date(byAdding: .day, value: -30, to: .now)!),
-                    ("SKHX", 950.00, Calendar.current.date(byAdding: .day, value: -60, to: .now)!),
-                    ("MU",   900.00, Calendar.current.date(byAdding: .day, value: -14, to: .now)!),
+                    ("NVDA", 175.00, daysAgo(30)),
+                    ("SKHX", 950.00, daysAgo(60)),
+                    ("MU",   900.00, daysAgo(14)),
                 ]
                 for (ticker, price, date) in demo {
                     modelContext.insert(FomoEntry(ticker: ticker, savedPriceUSD: price, savedAt: date))
@@ -119,6 +120,10 @@ struct RootTabView: View {
                 Task {
                     // 원격 종목 카탈로그(config/catalog) 반영 — 실패 시 내장 목록 유지
                     await CatalogConfigService.load()
+                }
+                Task {
+                    // FOMO 탭 쇼케이스 카드(config/fomoShowcase) 반영 — 문서 없으면 섹션 숨김
+                    store.applyShowcase(await ShowcaseConfigService.load())
                 }
                 Task {
                     // 원격 시장시간(config/marketSessions) 반영 후 알림 재예약

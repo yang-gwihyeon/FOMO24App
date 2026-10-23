@@ -10,6 +10,7 @@
                                                 버전 생성/조회 + 빌드 연결 + What's New
   asc.py metadata --version 1.5 --locale ko --field description|keywords|promotionalText --file f
   asc.py screenshots --version 1.5 --locale ko --device iphone67|ipad13 --dir 폴더   (기존 세트 교체)
+  asc.py screenshot-replace --version 1.5 --locale en --device iphone65 --index 2 --file f.png  (한 장만 교체)
   asc.py submit --version 1.5                   심사 제출 (되돌리기 어려움 — 항상 사용자 확인 후)
 
 설정: 레포 루트 .env (ASC_KEY_ID, ASC_ISSUER_ID, ASC_KEY_PATH, ASC_BUNDLE_ID)
@@ -245,20 +246,50 @@ def cmd_screenshots(env, a):
         sid = r["data"]["id"]
         print(f"✓ {dtype} 세트 생성")
     for f in files:
-        data = f.read_bytes()
-        r = call(env, "POST", "/appScreenshots", body={"data": {
-            "type": "appScreenshots", "attributes": {"fileName": f.name, "fileSize": len(data)},
-            "relationships": {"appScreenshotSet": {"data": {"type": "appScreenshotSets", "id": sid}}}}})
-        shot = r["data"]
-        for op in shot["attributes"]["uploadOperations"]:
-            chunk = data[op["offset"]: op["offset"] + op["length"]]
-            hdrs = {h["name"]: h["value"] for h in op["requestHeaders"]}
-            call(env, op["method"], None, raw_url=op["url"], headers=hdrs, data=chunk)
-        call(env, "PATCH", f"/appScreenshots/{shot['id']}", body={"data": {
-            "type": "appScreenshots", "id": shot["id"],
-            "attributes": {"uploaded": True, "sourceFileChecksum": hashlib.md5(data).hexdigest()}}})
-        print(f"✓ 업로드 {f.name} ({len(data)//1024} KB)")
+        upload_screenshot(env, sid, f)
     print(f"→ ASC에서 처리 후 반영 (보통 1~2분). {len(files)}장")
+
+
+def upload_screenshot(env, sid, f):
+    """예약 → 청크 업로드 → 커밋(체크섬). 반환: 새 appScreenshot id."""
+    data = f.read_bytes()
+    r = call(env, "POST", "/appScreenshots", body={"data": {
+        "type": "appScreenshots", "attributes": {"fileName": f.name, "fileSize": len(data)},
+        "relationships": {"appScreenshotSet": {"data": {"type": "appScreenshotSets", "id": sid}}}}})
+    shot = r["data"]
+    for op in shot["attributes"]["uploadOperations"]:
+        chunk = data[op["offset"]: op["offset"] + op["length"]]
+        hdrs = {h["name"]: h["value"] for h in op["requestHeaders"]}
+        call(env, op["method"], None, raw_url=op["url"], headers=hdrs, data=chunk)
+    call(env, "PATCH", f"/appScreenshots/{shot['id']}", body={"data": {
+        "type": "appScreenshots", "id": shot["id"],
+        "attributes": {"uploaded": True, "sourceFileChecksum": hashlib.md5(data).hexdigest()}}})
+    print(f"✓ 업로드 {f.name} ({len(data)//1024} KB)")
+    return shot["id"]
+
+
+def cmd_screenshot_replace(env, a):
+    """세트의 N번째(0부터) 한 장만 교체 — 나머지 순서 유지."""
+    aid, _ = app_id(env)
+    v = find_version(env, aid, a.version) or sys.exit(f"✗ 버전 {a.version} 없음 (prepare 먼저)")
+    loc = localizations(env, v["id"]).get(LOCALES[a.locale]) or sys.exit(f"✗ {a.locale} 로컬라이제이션 없음")
+    dtype = DEVICE_TYPES[a.device]
+    sets = call(env, "GET", f"/appStoreVersionLocalizations/{loc['id']}/appScreenshotSets",
+                params={"fields[appScreenshotSets]": "screenshotDisplayType"})
+    sset = next((s for s in sets["data"] if s["attributes"]["screenshotDisplayType"] == dtype), None) \
+        or sys.exit(f"✗ {dtype} 세트 없음 — screenshots(전체 업로드) 사용")
+    shots = call(env, "GET", f"/appScreenshotSets/{sset['id']}/appScreenshots",
+                 params={"fields[appScreenshots]": "fileName"})["data"]
+    ids = [s["id"] for s in shots]
+    if not 0 <= a.index < len(ids):
+        sys.exit(f"✗ index {a.index} 범위 밖 (0..{len(ids) - 1})")
+    old = shots[a.index]
+    new_id = upload_screenshot(env, sset["id"], Path(a.file))
+    call(env, "DELETE", f"/appScreenshots/{old['id']}")
+    ids[a.index] = new_id
+    call(env, "PATCH", f"/appScreenshotSets/{sset['id']}/relationships/appScreenshots",
+         body={"data": [{"type": "appScreenshots", "id": i} for i in ids]})
+    print(f"✓ [{a.index}] {old['attributes']['fileName']} → {Path(a.file).name} (순서 유지, {len(ids)}장)")
 
 
 def cmd_submit(env, a):
@@ -290,11 +321,14 @@ def main():
     s.add_argument("--field", choices=["description", "keywords", "promotionalText", "whatsNew", "supportUrl", "marketingUrl"], required=True); s.add_argument("--file", required=True)
     s = sub.add_parser("screenshots"); s.add_argument("--version", required=True); s.add_argument("--locale", choices=list(LOCALES), required=True)
     s.add_argument("--device", choices=list(DEVICE_TYPES), required=True); s.add_argument("--dir", required=True)
+    s = sub.add_parser("screenshot-replace"); s.add_argument("--version", required=True); s.add_argument("--locale", choices=list(LOCALES), required=True)
+    s.add_argument("--device", choices=list(DEVICE_TYPES), required=True); s.add_argument("--index", type=int, required=True); s.add_argument("--file", required=True)
     s = sub.add_parser("submit"); s.add_argument("--version", required=True)
     a = p.parse_args()
     env = load_env()
     {"auth": cmd_auth, "status": cmd_status, "builds": cmd_builds, "wait-build": cmd_wait_build, "prepare": cmd_prepare,
-     "metadata": cmd_metadata, "screenshots": cmd_screenshots, "submit": cmd_submit}[a.cmd](env, a)
+     "metadata": cmd_metadata, "screenshots": cmd_screenshots, "screenshot-replace": cmd_screenshot_replace,
+     "submit": cmd_submit}[a.cmd](env, a)
 
 
 if __name__ == "__main__":
