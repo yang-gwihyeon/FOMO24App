@@ -81,6 +81,7 @@ struct PriceRowView: View {
 
     /// 방송 버튼/메뉴 공용 토글.
     private func toggleTracking() {
+        Metrics.event(LiveActivityManager.shared.isTracking(ticker) ? "track_stop" : "track_start", ["ticker": ticker])
         if let quote = store.primary(ticker) {
             LiveActivityManager.shared.toggle(
                 ticker: ticker,
@@ -160,6 +161,7 @@ struct PriceRowView: View {
 
     private func recordFomo() {
         guard let usd = store.currentUSDPrice(for: ticker) else { return }
+        Metrics.event("fomo_add", ["ticker": ticker, "source": "markets"])
         context.insert(FomoEntry(ticker: ticker, savedPriceUSD: usd))
         Haptics.success()
         store.toast = store.appLanguage.fomoAddedToast

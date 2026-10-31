@@ -170,6 +170,7 @@ struct FomoView: View {
     private func setAlert(_ entry: FomoEntry, _ pct: Double) {
         Haptics.tap()
         entry.alertPct = pct
+        Metrics.event("alert_set", ["ticker": entry.ticker, "pct": String(Int(pct))])
         entry.hasAlerted = false   // 재설정하면 다시 1회 발송 가능
         if pct > 0 {
             Task {

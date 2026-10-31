@@ -86,6 +86,9 @@ struct RootTabView: View {
                 .tag(3)
         }
         // 시세가 갱신될 때마다 FOMO 임계값 체크 + 다이나믹 아일랜드 갱신
+        .onChange(of: selectedTab, initial: true) { _, tab in
+            Metrics.screen(["markets", "fomo", "calendar", "more"][safe: tab] ?? "unknown")
+        }
         .onChange(of: store.lastUpdated) { _, _ in
             checkFomoAlerts()
             LiveActivityManager.shared.updateAll(from: store)
@@ -208,4 +211,9 @@ struct RootTabView: View {
         }
         syncToServer()   // alertPct 0 → 동기화 diff가 서버 문서도 삭제
     }
+}
+
+private extension Array {
+    /// 범위 밖이면 nil — 탭 인덱스 → 이름 매핑용
+    subscript(safe i: Int) -> Element? { indices.contains(i) ? self[i] : nil }
 }
