@@ -46,6 +46,7 @@ struct FomoView: View {
                         PhIcon(.plusCircleFill, color: Theme.accent)
                             .frame(width: 26, height: 26)
                     }
+                    .accessibilityLabel(lang.t("기록 추가", "Add entry"))
                 }
             }
             .sheet(isPresented: $showingAdd) {
