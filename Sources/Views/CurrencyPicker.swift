@@ -17,6 +17,7 @@ struct CurrencyPicker: View {
                             // withAnimation 금지 — 리스트 전체(모든 가격 텍스트)가
                             // 애니메이션 diff 대상이 되어 탭 직후 프레임이 밀린다.
                             store.selectedCurrency = currency
+                            Metrics.event("currency_change", ["currency": currency.code])
                         }
                         // onTapGesture는 VoiceOver에 버튼으로 안 잡힘 — 역할·선택 상태를 명시
                         .accessibilityElement(children: .combine)
