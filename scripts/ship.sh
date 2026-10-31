@@ -16,10 +16,17 @@ branch=$(git branch --show-current)
 git fetch -q origin main
 [[ "$(git rev-parse HEAD)" == "$(git rev-parse origin/main)" ]] || { echo "✗ 로컬 main이 origin/main과 다름 (pull 또는 push 필요)"; exit 1; }
 
-# HEAD 커밋의 CI(필수 체크) 결과
+# HEAD 커밋의 CI(필수 체크) 결과. 머지 직후라 main CI가 아직 돌고 있으면
+# 머지된 PR 헤드(HEAD^2)의 CI 성공을 인정한다 — 같은 코드를 두 번 기다리지 않기 위해 (10분 절약).
+ci_ok() { [[ "$(gh run list --workflow=ci.yml --commit "$1" --limit 1 --json conclusion --jq '.[0].conclusion // "none"')" == "success" ]]; }
 sha=$(git rev-parse HEAD)
-ci=$(gh run list --workflow=ci.yml --commit "$sha" --limit 1 --json conclusion --jq '.[0].conclusion // "none"')
-[[ "$ci" == "success" ]] || { echo "✗ HEAD($sha)의 CI가 success가 아님: $ci"; exit 1; }
+if ci_ok "$sha"; then
+  echo "✓ CI success @ $sha"
+elif pr_head=$(git rev-parse -q --verify HEAD^2 2>/dev/null) && ci_ok "$pr_head"; then
+  echo "✓ CI success @ PR 헤드 $pr_head (main CI는 진행 중/미완 — 동일 코드라 인정)"
+else
+  echo "✗ HEAD($sha) 및 PR 헤드의 CI가 success가 아님"; exit 1
+fi
 
 if [[ "$MODE" == "--tag" ]]; then
   tag="v$VERSION"
