@@ -42,6 +42,25 @@ final class SmokeTests: XCTestCase {
         XCTAssertTrue(pct.waitForExistence(timeout: 15), "FOMO 탭에 수익률(%) 없음 — seedDemo 또는 시세 실패")
         attach("2-fomo")
 
+        // 쇼케이스 슬라이드 → "더보기" 카드 → 바텀시트. 원격 구성이 4개 미만이면 카드가 없으므로 건너뛴다
+        // (쇼케이스는 콘텐츠 설정이지 앱 결함이 아니라서 실패로 치지 않는다).
+        let slide = app.scrollViews["showcase.slide"]
+        if slide.waitForExistence(timeout: 10) {
+            slide.swipeLeft()
+            slide.swipeLeft()
+            let more = app.buttons["showcase.more"]
+            if more.waitForExistence(timeout: 5) {
+                attach("2b-fomo-showcase-slide")
+                more.tap()
+                XCTAssertTrue(app.scrollViews["showcase.sheet"].waitForExistence(timeout: 5), "더보기 시트가 열리지 않음")
+                attach("2c-fomo-showcase-sheet")
+                app.scrollViews["showcase.sheet"].swipeUp()
+                attach("2d-fomo-showcase-sheet-bottom")
+                app.buttons["showcase.close"].tap()
+                XCTAssertTrue(app.scrollViews["showcase.sheet"].waitForNonExistence(timeout: 5), "더보기 시트가 닫히지 않음")
+            }
+        }
+
         // 캘린더: 요일 헤더 + 원격 이벤트(REST) 1건 이상
         tabs.element(boundBy: 2).tap()
         XCTAssertTrue(app.staticTexts["Mon"].waitForExistence(timeout: 10) || app.staticTexts["월"].exists, "캘린더 요일 헤더 없음")

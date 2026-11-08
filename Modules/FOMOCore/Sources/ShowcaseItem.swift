@@ -48,3 +48,16 @@ public struct ShowcaseItem: Sendable, Identifiable {
         return (currentUSD / priceUSD - 1) * 100
     }
 }
+
+public extension ShowcaseItem {
+    /// 가로 슬라이드에 펼쳐 보이는 카드 수 — 그 뒤는 "더보기" 카드 한 장으로 접고 바텀시트에서 전체 노출.
+    static let featuredCount = 3
+    /// 서버(setShowcase)가 내려주는 상한. 시트 길이와 Firestore 문서 크기를 함께 묶는 값.
+    static let maxCount = 15
+
+    /// 슬라이드에 올릴 카드와 "더보기"로 접힐 나머지 개수. 상한을 넘는 항목은 버린다.
+    static func split(_ items: [ShowcaseItem]) -> (featured: [ShowcaseItem], hiddenCount: Int) {
+        let capped = Array(items.prefix(maxCount))
+        return (Array(capped.prefix(featuredCount)), max(0, capped.count - featuredCount))
+    }
+}

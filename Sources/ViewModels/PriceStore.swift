@@ -11,7 +11,7 @@ final class PriceStore {
     private(set) var tickers: [String] = []          // 사용 가능한 종목 (Catalog 순서)
     private(set) var fxRates: [String: Double] = [:]
     private(set) var lastUpdated: Date?
-    /// FOMO 탭 상단 쇼케이스 카드 (원격 구성 `config/fomoShowcase`, 뷰에서 최대 2장 표시)
+    /// FOMO 탭 상단 쇼케이스 카드 (원격 구성 `config/fomoShowcase`, 슬라이드 3장 + 더보기 시트 최대 15개)
     private(set) var showcaseItems: [ShowcaseItem] = []
 
     // 상태
