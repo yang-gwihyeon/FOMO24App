@@ -38,4 +38,32 @@ struct ShowcaseItemTests {
         #expect(abs(item.returnPct(currentUSD: 134.2) - 34.2) < 0.0001)
         #expect(abs(item.returnPct(currentUSD: 80) - (-20)) < 0.0001)
     }
+
+    private func items(_ n: Int) -> [ShowcaseItem] {
+        (0..<n).map { ShowcaseItem(ticker: "T\($0)", priceUSD: 100, ko: "이벤트", en: "event") }
+    }
+
+    @Test func 슬라이드_3개_이하면_더보기_없음() {
+        let r = ShowcaseItem.split(items(3))
+        #expect(r.featured.count == 3)
+        #expect(r.hiddenCount == 0)
+    }
+
+    @Test func 슬라이드_3개_넘으면_나머지는_더보기로() {
+        let r = ShowcaseItem.split(items(5))
+        #expect(r.featured.map(\.ticker) == ["T0", "T1", "T2"])
+        #expect(r.hiddenCount == 2)
+    }
+
+    @Test func 상한_15개를_넘는_항목은_버린다() {
+        let r = ShowcaseItem.split(items(20))
+        #expect(r.featured.count == 3)
+        #expect(r.hiddenCount == 12)
+    }
+
+    @Test func 비어_있으면_둘_다_비어_있다() {
+        let r = ShowcaseItem.split([])
+        #expect(r.featured.isEmpty)
+        #expect(r.hiddenCount == 0)
+    }
 }

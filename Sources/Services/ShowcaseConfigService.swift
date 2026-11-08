@@ -8,6 +8,7 @@ enum ShowcaseConfigService {
     static func load() async -> [ShowcaseItem] {
         guard let doc = await FirestoreREST.shared.getDocumentCached("config/fomoShowcase"),
               let raw = doc["entries"] as? [[String: Any]] else { return [] }
-        return raw.compactMap(ShowcaseItem.init(remote:))
+        // 서버도 15개로 자르지만, 콘솔에서 직접 넣은 문서가 길어도 시트가 무한히 길어지지 않게 한 번 더
+        return Array(raw.compactMap(ShowcaseItem.init(remote:)).prefix(ShowcaseItem.maxCount))
     }
 }
