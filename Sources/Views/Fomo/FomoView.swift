@@ -14,6 +14,7 @@ struct FomoView: View {
     @State private var alertInput = ""
     @State private var showLimitAlert = false
     @State private var showNotifDenied = false      // 알림 권한 거부 안내
+    @State private var chartTarget: ChartTarget?    // 기록 행 탭 → 해당 기록이 선택된 차트
 
     private var lang: AppLanguage { store.appLanguage }
 
@@ -52,6 +53,9 @@ struct FomoView: View {
                 AddFomoSheet()
                     .environment(store)
             }
+            .sheet(item: $chartTarget) { target in
+                PriceChartSheet(target: target).environment(store)
+            }
             // 컨텍스트 메뉴 → 알림 % 직접 입력 (1% 단위)
             .alert(lang.t("가격 알림 설정", "Set Price Alert"), isPresented: Binding(
                 get: { alertTarget != nil },
@@ -88,6 +92,14 @@ struct FomoView: View {
                     alertInput = entry.alertPct > 0 ? "\(Int(entry.alertPct))" : ""
                     alertTarget = entry
                 })
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        Haptics.tap()
+                        chartTarget = ChartTarget(ticker: entry.ticker, focusUUID: entry.uuid)
+                    }
+                    .accessibilityAction(named: lang.t("차트 보기", "Show chart")) {
+                        chartTarget = ChartTarget(ticker: entry.ticker, focusUUID: entry.uuid)
+                    }
                     .listRowSeparator(.hidden)
                     .listRowBackground(Color.clear)
                     .listRowInsets(EdgeInsets(top: 5, leading: 20, bottom: 5, trailing: 20))

@@ -6,6 +6,8 @@ import SwiftData
 /// 종목 1개 = 여러 거래소 가격을 한 번에 보여주는 플랫 블록.
 struct PriceRowView: View {
     let ticker: String
+    /// 행 탭 → 차트 시트 (시트는 리스트 바깥 DashboardView가 띄운다 — 행마다 시트를 달지 않게)
+    var onOpenChart: () -> Void = {}
     @Environment(PriceStore.self) private var store
     @Environment(\.modelContext) private var context
 
@@ -27,6 +29,11 @@ struct PriceRowView: View {
         .padding(.horizontal, 20)
         .padding(.vertical, 14)
         .contentShape(Rectangle())
+        .onTapGesture {
+            Haptics.tap()
+            onOpenChart()
+        }
+        .accessibilityAction(named: lang.t("차트 보기", "Show chart")) { onOpenChart() }
         // 길게 눌러 실시간 추적 시작/중지
         // 미지원 기기·꺼짐 상태에서는 메뉴 자체를 숨김 (App Review 5.6 회신 내용과 일치 — 비기능 UI 미노출)
         .contextMenu {
@@ -66,9 +73,29 @@ struct PriceRowView: View {
                 }
             }
             Spacer()
+            chartButton
             trackButton
             quickAddButton
         }
+    }
+
+    /// 차트 버튼 — 행 탭으로도 열리지만 "누르면 차트가 나온다"는 단서가 없어 아이콘으로 드러낸다.
+    /// 옆의 회색 버튼들과 달리 액센트 색: 이 행의 주 동작이라서.
+    private var chartButton: some View {
+        Button {
+            Haptics.tap()
+            onOpenChart()
+        } label: {
+            Image(systemName: "chart.xyaxis.line")
+                .font(.system(size: 14, weight: .semibold))
+                .foregroundStyle(Theme.accent)
+                .frame(width: 30, height: 30)
+                .background(Theme.accent.opacity(0.10), in: Circle())
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityIdentifier("row.chart")
+        .accessibilityLabel(lang.t("차트 보기", "Show chart"))
     }
 
     /// 실시간 추적 버튼 — 지원 기기에서 항상 노출 (발견 가능성).

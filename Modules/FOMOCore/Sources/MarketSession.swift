@@ -173,6 +173,27 @@ public struct MarketSession: Identifiable, Sendable {
         return now
     }
 
+    /// [from, to]에 걸치는 정규장 구간 (주말·휴장 제외, 구간 밖은 잘라냄). 차트 배경 띠용.
+    public func regularIntervals(from: Date, to: Date, cal: Calendar) -> [DateInterval] {
+        guard from < to else { return [] }
+        var result: [DateInterval] = []
+        var day = cal.startOfDay(for: from)
+        var guardCount = 0
+        while day < to, guardCount < 400 {
+            guardCount += 1
+            if isTradingDay(day, cal: cal) {
+                for w in windows where w.kind == .regular {
+                    let open = max(date(on: day, w.open, cal: cal), from)
+                    let close = min(date(on: day, w.close, cal: cal), to)
+                    if open < close { result.append(DateInterval(start: open, end: close)) }
+                }
+            }
+            guard let next = cal.date(byAdding: .day, value: 1, to: day) else { break }
+            day = next
+        }
+        return result
+    }
+
     // MARK: 정의 (4개 거래소, 2026 휴장일)
 
     /// 현재 사용 중인 세션 목록. 앱 활성화 시 Firestore `config/marketSessions`로 교체됨.
