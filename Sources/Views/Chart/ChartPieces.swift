@@ -205,3 +205,16 @@ struct ChartPinButton: View {
         .accessibilityLabel(pinned ? lang.t("고정 해제", "Unpin") : lang.t("맨 위에 고정", "Pin to top"))
     }
 }
+
+extension View {
+    /// 아이패드에서 시트를 페이지 크기로 — 기본(폼 시트)은 작은 창으로 떠서 차트 아래 내용이 잘렸다.
+    /// presentationSizing은 iOS 18부터라 17에서는 기본 크기를 유지한다. 아이폰에는 영향 없음.
+    @ViewBuilder
+    func chartSheetSizing() -> some View {
+        if #available(iOS 18.0, *) {
+            presentationSizing(.page)
+        } else {
+            self
+        }
+    }
+}

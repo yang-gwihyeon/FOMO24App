@@ -154,16 +154,19 @@ struct PriceChartView: View {
                     .foregroundStyle(fillColor.opacity(0.16))
             }
         }
-        // 라벨은 오른쪽 끝, 현재가 반대편에 둔다 — 왼쪽 위에 두면 가격선과 겹쳐 읽히지 않았다.
-        // 그래도 선이 기록가를 오르내리면 겹칠 수 있어 배경판을 깔아 글자를 지킨다.
-        let lineBelow = (points.last?.usd ?? selected.usd) <= selected.usd
+        // 라벨은 가격선이 기록가에서 더 멀리 떨어진 쪽 끝(왼쪽/오른쪽)에, 선의 반대편(위/아래)으로 둔다.
+        // 한쪽에 고정하면 선이 그 자리를 지날 때 겹쳐 읽히지 않았다. 그래도 겹칠 때를 위해 배경판을 깐다.
+        let first = points.first?.usd ?? selected.usd
+        let last = points.last?.usd ?? selected.usd
+        let atTrailing = abs(last - selected.usd) >= abs(first - selected.usd)
+        let lineBelow = (atTrailing ? last : first) <= selected.usd
         let prefix = selected.isBeforeRange
             ? "\(Fmt.date("yy.M.d").string(from: selected.savedAt)) \(lang.t("기록가", "saved"))"
             : lang.t("기록가", "Saved")
         RuleMark(y: .value("기록가", selected.usd))
             .lineStyle(StrokeStyle(lineWidth: 1, dash: [4, 4]))
             .foregroundStyle(fillColor.opacity(0.8))
-            .annotation(position: lineBelow ? .top : .bottom, alignment: .trailing, spacing: 2) {
+            .annotation(position: lineBelow ? .top : .bottom, alignment: atTrailing ? .trailing : .leading, spacing: 2) {
                 Text("\(prefix) \(formatPrice(selected.usd))")
                     .font(.pd(10, .semibold, relativeTo: .caption2).monospacedDigit())
                     .foregroundStyle(fillColor)
