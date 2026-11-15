@@ -300,6 +300,8 @@ private struct DayCell: View {
             Text("\(cal.component(.day, from: day))")
                 .font(.pd(16, isToday ? .bold : .semibold, relativeTo: .body).monospacedDigit())
                 .foregroundStyle(numberColor)
+                .lineLimit(1)
+                .minimumScaleFactor(0.4)   // 큰 글자 크기에서 34pt 원 안의 날짜가 "…"로 잘리지 않게
                 .frame(width: 34, height: 34)
                 .background(isToday ? Theme.accent : .clear, in: Circle())
             dots

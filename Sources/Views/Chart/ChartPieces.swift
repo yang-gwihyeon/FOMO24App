@@ -30,6 +30,8 @@ struct RangePositionBar: View {
             }
             .font(.pd(11, .medium, relativeTo: .caption2).monospacedDigit())
             .foregroundStyle(.secondary)
+            .lineLimit(1)
+            .minimumScaleFactor(0.6)
         }
         .accessibilityHidden(true)   // 같은 내용을 헤드라인 문장이 읽어준다
     }

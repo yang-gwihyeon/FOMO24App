@@ -144,9 +144,12 @@ struct PriceRowView: View {
         let sf = quotesForTicker[source]
         let isCheapest = orderedSources.count > 1 && sf?.usdPrice == cheapestPrice
         return HStack(spacing: 8) {
+            // 숫자·이름은 큰 글자 크기에서도 한 줄 — 두 줄로 깨지면("-0.8 / 6%") 값을 잘못 읽는다
             Text(source.displayName)
                 .font(.pd(13, isCheapest ? .semibold : .medium, relativeTo: .subheadline))
                 .foregroundStyle(isCheapest ? Theme.accent : .secondary)
+                .lineLimit(1)
+                .minimumScaleFactor(0.6)
             if isCheapest {
                 Text(lang.t("최저", "Best"))
                     .font(.pd(9, .bold, relativeTo: .caption2))
@@ -159,10 +162,15 @@ struct PriceRowView: View {
                 Text(store.formatted(sf.usdPrice))
                     .font(.pd(14, .semibold, relativeTo: .subheadline).monospacedDigit())
                     .foregroundStyle(.primary)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.7)
                 Text(String(format: "%@%.2f%%", sf.isUp ? "+" : "", sf.change24h))
                     .font(.pd(12, .semibold, relativeTo: .caption).monospacedDigit())
                     .foregroundStyle(Theme.changeColor(sf.isUp))
-                    .frame(width: 62, alignment: .trailing)
+                    .lineLimit(1)
+                    .fixedSize()
+                    .frame(minWidth: 62, alignment: .trailing)
+                    .layoutPriority(1)
             }
         }
     }

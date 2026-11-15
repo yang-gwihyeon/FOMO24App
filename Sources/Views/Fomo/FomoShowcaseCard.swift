@@ -27,6 +27,8 @@ struct FomoShowcaseCard: View {
             Text(signedPct(pct))
                 .font(.pd(24, .bold, relativeTo: .title2).monospacedDigit())
                 .foregroundStyle(color)
+                .lineLimit(1)
+                .minimumScaleFactor(0.5)
                 .contentTransition(.numericText())
             Text(lang.t("그때 샀다면 지금", "If you'd bought then"))
                 .font(.pd(10, .medium, relativeTo: .caption2))
@@ -185,6 +187,8 @@ struct FomoShowcaseListRow: View {
             Text(signedPct(pct))
                 .font(.pd(18, .bold, relativeTo: .title3).monospacedDigit())
                 .foregroundStyle(color)
+                .lineLimit(1)
+                .fixedSize()
                 .contentTransition(.numericText())
         }
         .padding(14)

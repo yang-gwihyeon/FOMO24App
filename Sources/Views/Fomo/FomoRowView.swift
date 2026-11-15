@@ -62,6 +62,8 @@ struct FomoRowView: View {
                     Text(String(format: "%@%.2f%%", up ? "+" : "", pct))
                         .font(.pd(22, .bold, relativeTo: .title2).monospacedDigit())
                         .foregroundStyle(color)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.6)
                     Text(up ? lang.fomoMessage : lang.antiFomoMessage)
                         .font(.pd(11, .medium, relativeTo: .caption2))
                         .foregroundStyle(.secondary)
@@ -109,6 +111,8 @@ struct FomoRowView: View {
             Text(savedAtText)
                 .font(.pd(11, .regular, relativeTo: .caption2))
                 .foregroundStyle(.tertiary)
+                .lineLimit(1)
+                .minimumScaleFactor(0.6)
         }
     }
 
@@ -120,6 +124,8 @@ struct FomoRowView: View {
             Text(value)
                 .font(.pd(14, .semibold, relativeTo: .subheadline).monospacedDigit())
                 .foregroundStyle(color)
+                .lineLimit(1)
+                .minimumScaleFactor(0.6)
         }
     }
 
