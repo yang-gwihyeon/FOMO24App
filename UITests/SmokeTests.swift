@@ -72,6 +72,39 @@ final class SmokeTests: XCTestCase {
         attach("4-more")
     }
 
+    /// 차트: 종목 행 탭 → 시트 → 훑기 → 그 시점으로 FOMO 기록 추가까지 한 흐름.
+    func test_차트_열기_훑기_기록추가() throws {
+        let firstPrice = app.staticTexts.matching(NSPredicate(format: "label BEGINSWITH '$'")).firstMatch
+        XCTAssertTrue(firstPrice.waitForExistence(timeout: 25), "25초 내 시세($) 미표시")
+        app.cells.firstMatch.coordinate(withNormalizedOffset: CGVector(dx: 0.3, dy: 0.25)).tap()
+
+        let plot = app.otherElements["chart.plot"]
+        XCTAssertTrue(plot.waitForExistence(timeout: 20), "차트가 20초 내 표시되지 않음 — 봉 조회 실패")
+        attach("5-chart")
+
+        // 훑기: 손을 뗀 뒤에도 선택 시점이 남아 '기록' 버튼이 보여야 한다
+        let from = plot.coordinate(withNormalizedOffset: CGVector(dx: 0.25, dy: 0.5))
+        let to = plot.coordinate(withNormalizedOffset: CGVector(dx: 0.6, dy: 0.5))
+        from.press(forDuration: 0.4, thenDragTo: to)
+        let save = app.buttons["chart.save"]
+        XCTAssertTrue(save.waitForExistence(timeout: 5), "훑은 뒤 '기록' 버튼 없음")
+        attach("5b-chart-scrubbed")
+
+        let before = app.buttons.matching(identifier: "chart.entry").count
+        save.tap()
+        let added = NSPredicate { _, _ in self.app.buttons.matching(identifier: "chart.entry").count == before + 1 }
+        wait(for: [expectation(for: added, evaluatedWith: nil)], timeout: 5)
+        attach("5c-chart-entry-added")
+
+        // 실시간 탭: 1초 점이 쌓일 시간을 준 뒤에도 차트가 살아 있어야 한다
+        app.buttons["chart.range.live"].tap()
+        XCTAssertTrue(plot.waitForExistence(timeout: 20), "실시간 차트 미표시")
+        XCTAssertTrue(app.staticTexts["LIVE"].waitForExistence(timeout: 15), "실시간 연결(LIVE) 표시 없음")
+        Thread.sleep(forTimeInterval: 8)
+        XCTAssertTrue(plot.exists, "실시간 8초 뒤 차트가 사라짐")
+        attach("5d-chart-live")
+    }
+
     /// 스크린샷을 결과 번들에 영구 첨부 — scripts/smoke.sh 가 xcresulttool로 PNG 추출.
     private func attach(_ name: String) {
         let shot = XCTAttachment(screenshot: app.screenshot())

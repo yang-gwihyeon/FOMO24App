@@ -8,6 +8,7 @@ struct DashboardView: View {
     /// 다이나믹 아일랜드 안내 툴팁 — 추적이 설정돼 있지 않으면 앱 실행마다 표시.
     /// 닫으면 이번 실행 동안만 숨김, 추적을 시작하면 즉시 사라짐.
     @State private var islandTipDismissed = false
+    @State private var chartTarget: ChartTarget?
     private var showIslandTip: Bool {
         #if DEBUG
         // 스크린샷 자동화용 숨김 플래그 (DEBUG 전용)
@@ -25,6 +26,17 @@ struct DashboardView: View {
         }
         .overlay(alignment: .bottom) { toastView }
         .animation(.snappy, value: store.toast)
+        .sheet(item: $chartTarget) { target in
+            PriceChartSheet(target: target).environment(store)
+        }
+        #if DEBUG
+        // 스크린샷 자동화용: -openChart NVDA 로 실행하면 차트 시트를 바로 연다 (DEBUG 전용)
+        .task {
+            if let ticker = UserDefaults.standard.string(forKey: "openChart") {
+                chartTarget = ChartTarget(ticker: ticker)
+            }
+        }
+        #endif
         // 포그라운드일 때만 5초 폴링, 백그라운드 진입 시 중단 (요구사항).
         .onChange(of: scenePhase, initial: true) { _, phase in
             switch phase {
@@ -79,7 +91,7 @@ struct DashboardView: View {
             Divider()
             List {
                 ForEach(store.displayedTickers, id: \.self) { ticker in
-                    PriceRowView(ticker: ticker)
+                    PriceRowView(ticker: ticker, onOpenChart: { chartTarget = ChartTarget(ticker: ticker) })
                         .listRowInsets(EdgeInsets())
                         .listRowBackground(Color(uiColor: .systemBackground))
                         .listRowSeparatorTint(Color(uiColor: .separator).opacity(0.5))
