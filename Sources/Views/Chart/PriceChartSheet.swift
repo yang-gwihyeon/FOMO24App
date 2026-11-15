@@ -62,6 +62,9 @@ struct PriceChartSheet: View {
         .presentationDetents([.large])
         .presentationDragIndicator(.visible)
         .task(id: range) { await load() }
+        // 캘린더 일정은 캘린더 탭을 열어야 내려받는다 — 그 전에 차트를 열면 일정 줄이 비어 있었다.
+        // 이미 받았으면 건너뛰므로 앱 실행당 최대 1회 (Firestore 문서 2건 읽기).
+        .task { if CalendarStore.shared.remoteEvents.isEmpty { await CalendarStore.shared.load() } }
         .task(id: liveActive) { if let series, liveActive { await consumeLive(isAlwaysOpen: series.isAlwaysOpen) } }
         .task(id: liveActive) { if liveActive { await tickLive() } }
         .onChange(of: scrubDate) { _, date in
@@ -186,8 +189,8 @@ extension PriceChartSheet {
 
     private func entryMarks(from start: Date) -> [ChartEntryMark] {
         entries.map {
-            ChartEntryMark(id: $0.uuid, date: max($0.savedAt, start), usd: $0.savedPriceUSD,
-                           isSelected: $0.uuid == selectedUUID)
+            ChartEntryMark(id: $0.uuid, savedAt: $0.savedAt, usd: $0.savedPriceUSD,
+                           isSelected: $0.uuid == selectedUUID, isBeforeRange: $0.savedAt < start)
         }
     }
 
@@ -207,7 +210,11 @@ extension PriceChartSheet {
     private func matches(_ event: CalendarEvent) -> Bool {
         let ko = Catalog.name(for: ticker, language: .ko)
         let en = Catalog.name(for: ticker, language: .en)
-        return event.title.contains(ko) || (event.titleEn ?? event.title).localizedCaseInsensitiveContains(en)
+        let titles = event.title + " " + (event.titleEn ?? "")
+        // 자동 수집 실적 일정은 제목이 "NVDA 실적 발표"처럼 티커로 온다 — 단어 단위로만 맞춘다 ("MU"가 "MUSK"에 걸리지 않게)
+        let tickerWord = "\\b" + NSRegularExpression.escapedPattern(for: ticker) + "\\b"
+        return titles.contains(ko) || titles.localizedCaseInsensitiveContains(en)
+            || titles.range(of: tickerWord, options: .regularExpression) != nil
     }
 
     private func eventMarks(_ points: [ChartPoint]) -> [ChartEventMark] {
@@ -319,6 +326,7 @@ extension PriceChartSheet {
                     range: range,
                     lang: lang,
                     formatPrice: store.formatted,
+                    formatAxis: store.formattedAxis,
                     scrubDate: $scrubDate)
                     .accessibilityElement(children: .ignore)
                     .accessibilityLabel("\(headlineText(stats)). \(sublineText(stats))")
