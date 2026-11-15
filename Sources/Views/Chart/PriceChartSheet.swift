@@ -60,6 +60,7 @@ struct PriceChartSheet: View {
         .accessibilityIdentifier("chart.sheet")
         .background(Color(uiColor: .systemBackground))
         .presentationDetents([.large])
+        .chartSheetSizing()
         .presentationDragIndicator(.visible)
         .task(id: range) { await load() }
         // 캘린더 일정은 캘린더 탭을 열어야 내려받는다 — 그 전에 차트를 열면 일정 줄이 비어 있었다.
