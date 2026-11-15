@@ -30,12 +30,15 @@ struct RangePositionBar: View {
             }
             .font(.pd(11, .medium, relativeTo: .caption2).monospacedDigit())
             .foregroundStyle(.secondary)
+            .lineLimit(1)
+            .minimumScaleFactor(0.6)
         }
         .accessibilityHidden(true)   // 같은 내용을 헤드라인 문장이 읽어준다
     }
 }
 
 /// 거래소별 현재가를 한 줄 막대로 비교. 막대 길이 = 최저가 대비 얼마나 비싼지.
+/// 막대가 꽉 차는 기준은 0.5% 격차 — 최저~최고로 꽉 채우면 0.09% 차이도 큰 차이처럼 보였다.
 struct ExchangeCompareView: View {
     let ticker: String
     @Environment(PriceStore.self) private var store
@@ -49,22 +52,31 @@ struct ExchangeCompareView: View {
         let lo = prices.min() ?? 0
         let hi = prices.max() ?? 0
 
+        // 거래소가 하나뿐이면 비교할 게 없다 — "+0.00%" 한 줄만 남아 어색했다
+        if sources.count > 1 {
+            compareList(sources: sources, quotes: quotes, lo: lo, hi: hi)
+        }
+    }
+
+    private func compareList(sources: [DataSource], quotes: [DataSource: StockFuture],
+                             lo: Double, hi: Double) -> some View {
         VStack(alignment: .leading, spacing: 10) {
             Text(lang.t("거래소별 현재가", "Price by exchange"))
                 .font(.pd(13, .semibold, relativeTo: .subheadline))
                 .foregroundStyle(.secondary)
             ForEach(sources) { source in
                 if let price = quotes[source]?.usdPrice {
-                    row(source, price: price, lo: lo, hi: hi, showBest: sources.count > 1)
+                    row(source, price: price, lo: lo, hi: hi)
                 }
             }
         }
     }
 
-    private func row(_ source: DataSource, price: Double, lo: Double, hi: Double, showBest: Bool) -> some View {
-        let isBest = showBest && price == lo
-        let fraction = hi > lo ? (price - lo) / (hi - lo) : 0
+    private func row(_ source: DataSource, price: Double, lo: Double, hi: Double) -> some View {
+        let isBest = price == lo
         let diff = lo > 0 ? (price / lo - 1) * 100 : 0
+        let widest = lo > 0 ? (hi / lo - 1) * 100 : 0
+        let fraction = min(diff / max(widest, 0.5), 1)
         return HStack(spacing: 10) {
             Text(source.displayName)
                 .font(.pd(13, isBest ? .semibold : .medium, relativeTo: .subheadline))

@@ -211,4 +211,13 @@ final class PriceStore {
         let number = formatter.string(from: NSNumber(value: value)) ?? "\(value)"
         return "\(currency.symbol)\(number)"
     }
+
+    /// 차트 축 눈금용 — 1,000 이상은 소수점을 뗀다 ("$85,000.00" → "$85,000").
+    func formattedAxis(_ usd: Double) -> String {
+        let value = convertedPrice(usd)
+        let currency = selectedCurrency
+        let digits = abs(value) >= 1000 ? 0 : currency.fractionDigits
+        let number = Fmt.number(fractionDigits: digits).string(from: NSNumber(value: value)) ?? "\(value)"
+        return "\(currency.symbol)\(number)"
+    }
 }

@@ -276,6 +276,8 @@ private struct HeaderView: View {
                 .font(.pd(12, .medium, relativeTo: .caption))
                 .foregroundStyle(.secondary)
         }
+        .lineLimit(1)
+        .minimumScaleFactor(0.6)
     }
 
     private var exchangesLabel: String {
