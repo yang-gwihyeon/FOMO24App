@@ -270,6 +270,7 @@ extension PriceChartSheet {
                     if range == .live { ChartLivePill(connected: liveConnected, lang: lang) }
                 }
             }
+            ChartPinButton(ticker: ticker)
             Spacer()
             Text(currentUSD.map { store.formatted($0) } ?? "—")
                 .font(.pd(22, .bold, relativeTo: .title2).monospacedDigit())

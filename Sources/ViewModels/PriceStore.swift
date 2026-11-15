@@ -66,6 +66,20 @@ final class PriceStore {
         }
     }
 
+    /// 마켓 목록 맨 위에 고정한 종목 (1개). 정렬을 바꿔도 항상 첫 줄. UserDefaults에 저장.
+    var pinnedTicker: String? = UserDefaults.standard.string(forKey: "pinnedTicker") {
+        didSet { UserDefaults.standard.set(pinnedTicker, forKey: "pinnedTicker") }
+    }
+
+    /// 고정 토글 — 이미 고정된 종목이면 해제, 아니면 이 종목으로 교체.
+    func togglePin(_ ticker: String, showToast: Bool = true) {
+        let pinning = pinnedTicker != ticker
+        pinnedTicker = pinning ? ticker : nil
+        guard showToast else { return }
+        toast = pinning ? appLanguage.t("맨 위에 고정했어요", "Pinned to top")
+                        : appLanguage.t("고정을 해제했어요", "Unpinned")
+    }
+
     /// 토스트 메시지 (FOMO 추가 확인 등). 표시 후 nil로 초기화.
     var toast: String?
 
@@ -169,6 +183,10 @@ final class PriceStore {
 
     /// 정렬이 적용된 표시 종목 목록.
     var displayedTickers: [String] {
+        PinnedOrder.apply(sortedTickers, pinned: pinnedTicker)
+    }
+
+    private var sortedTickers: [String] {
         switch sortOption {
         case .recommended:
             return tickers // Catalog 순서

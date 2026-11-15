@@ -105,6 +105,31 @@ final class SmokeTests: XCTestCase {
         attach("5d-chart-live")
     }
 
+    /// 상단 고정: 셋째 행을 오른쪽으로 밀어 고정 → 첫 행에 핀 표시 → 다시 밀어 해제.
+    func test_상단_고정_및_해제() throws {
+        let firstPrice = app.staticTexts.matching(NSPredicate(format: "label BEGINSWITH '$'")).firstMatch
+        XCTAssertTrue(firstPrice.waitForExistence(timeout: 25), "25초 내 시세($) 미표시")
+        let pinIcon = app.images["row.pinned"]
+        XCTAssertFalse(pinIcon.exists, "시작부터 고정된 종목이 있음")
+
+        let pinLabel = NSPredicate(format: "label IN {'맨 위에 고정', 'Pin to top'}")
+        app.cells.element(boundBy: 2).swipeRight()
+        let pin = app.buttons.matching(pinLabel).firstMatch
+        XCTAssertTrue(pin.waitForExistence(timeout: 5), "스와이프 후 고정 버튼 없음")
+        pin.tap()
+        XCTAssertTrue(pinIcon.waitForExistence(timeout: 5), "고정 후 핀 표시 없음")
+        XCTAssertTrue(app.cells.firstMatch.images["row.pinned"].exists, "고정한 종목이 첫 행이 아님")
+        attach("6-pinned")
+
+        // 테스트가 사용자의 고정 설정을 남기지 않도록 해제까지 수행
+        let unpinLabel = NSPredicate(format: "label IN {'고정 해제', 'Unpin'}")
+        app.cells.firstMatch.swipeRight()
+        let unpin = app.buttons.matching(unpinLabel).firstMatch
+        XCTAssertTrue(unpin.waitForExistence(timeout: 5), "스와이프 후 해제 버튼 없음")
+        unpin.tap()
+        XCTAssertTrue(pinIcon.waitForNonExistence(timeout: 5), "해제 후에도 핀 표시가 남음")
+    }
+
     /// 스크린샷을 결과 번들에 영구 첨부 — scripts/smoke.sh 가 xcresulttool로 PNG 추출.
     private func attach(_ name: String) {
         let shot = XCTAttachment(screenshot: app.screenshot())

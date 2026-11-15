@@ -26,6 +26,7 @@ struct DashboardView: View {
         }
         .overlay(alignment: .bottom) { toastView }
         .animation(.snappy, value: store.toast)
+        .animation(.snappy, value: store.pinnedTicker)
         .sheet(item: $chartTarget) { target in
             PriceChartSheet(target: target).environment(store)
         }
@@ -92,6 +93,10 @@ struct DashboardView: View {
             List {
                 ForEach(store.displayedTickers, id: \.self) { ticker in
                     PriceRowView(ticker: ticker, onOpenChart: { chartTarget = ChartTarget(ticker: ticker) })
+                        // 오른쪽으로 밀어서 맨 위에 고정 (길게 누르기 메뉴에도 같은 항목)
+                        .swipeActions(edge: .leading, allowsFullSwipe: true) {
+                            PinMenuButton(ticker: ticker).tint(Theme.accent)
+                        }
                         .listRowInsets(EdgeInsets())
                         .listRowBackground(Color(uiColor: .systemBackground))
                         .listRowSeparatorTint(Color(uiColor: .separator).opacity(0.5))
