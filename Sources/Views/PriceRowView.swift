@@ -37,6 +37,7 @@ struct PriceRowView: View {
         // 길게 눌러 실시간 추적 시작/중지
         // 미지원 기기·꺼짐 상태에서는 메뉴 자체를 숨김 (App Review 5.6 회신 내용과 일치 — 비기능 UI 미노출)
         .contextMenu {
+            PinMenuButton(ticker: ticker)
             if LiveActivityManager.shared.isAvailable {
                 let tracking = LiveActivityManager.shared.isTracking(ticker)
                 Button {
@@ -56,8 +57,17 @@ struct PriceRowView: View {
     private var header: some View {
         HStack(spacing: 12) {
             VStack(alignment: .leading, spacing: 2) {
-                Text(Catalog.name(for: ticker, language: lang))
-                    .font(.pd(16, .semibold, relativeTo: .headline))
+                HStack(spacing: 5) {
+                    Text(Catalog.name(for: ticker, language: lang))
+                        .font(.pd(16, .semibold, relativeTo: .headline))
+                    if store.pinnedTicker == ticker {
+                        Image(systemName: "pin.fill")
+                            .font(.system(size: 11, weight: .semibold))
+                            .foregroundStyle(Theme.accent)
+                            .accessibilityLabel(lang.t("상단 고정됨", "Pinned"))
+                            .accessibilityIdentifier("row.pinned")
+                    }
+                }
                 HStack(spacing: 6) {
                     Text(ticker)
                         .font(.pd(11, .medium, relativeTo: .caption2))
@@ -213,5 +223,26 @@ struct PriceRowView: View {
         let prices = quotesForTicker.values.map(\.usdPrice)
         guard let lo = prices.min(), let hi = prices.max(), lo > 0, hi > lo else { return nil }
         return String(format: "\(lang.t("격차", "Spread")) %.2f%%", (hi / lo - 1) * 100)
+    }
+}
+
+/// 상단 고정 토글 — 길게 누르기 메뉴와 스와이프(DashboardView)에서 같이 쓴다.
+/// 독립된 뷰인 이유: 스와이프 액션은 행 바깥에서 만들어져, 행의 계산 프로퍼티로 두면
+/// 환경 객체(PriceStore)가 아직 없는 상태에서 읽혀 크래시가 난다.
+struct PinMenuButton: View {
+    let ticker: String
+    @Environment(PriceStore.self) private var store
+
+    var body: some View {
+        let pinned = store.pinnedTicker == ticker
+        let lang = store.appLanguage
+        Button {
+            Haptics.tap()
+            Metrics.event(pinned ? "pin_clear" : "pin_set", ["ticker": ticker])
+            withAnimation(.snappy) { store.togglePin(ticker) }
+        } label: {
+            Label(pinned ? lang.t("고정 해제", "Unpin") : lang.t("맨 위에 고정", "Pin to top"),
+                  systemImage: pinned ? "pin.slash" : "pin")
+        }
     }
 }

@@ -179,3 +179,29 @@ struct ChartFailedView: View {
         .background(Color(uiColor: .tertiarySystemFill), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
     }
 }
+
+/// 이 종목을 마켓 목록 맨 위에 고정 — 목록에서는 길게 누르기·스와이프라 차트에서도 바로 되게.
+struct ChartPinButton: View {
+    let ticker: String
+    @Environment(PriceStore.self) private var store
+
+    var body: some View {
+        let pinned = store.pinnedTicker == ticker
+        let lang = store.appLanguage
+        Button {
+            Haptics.tap()
+            Metrics.event(pinned ? "pin_clear" : "pin_set", ["ticker": ticker])
+            // 토스트는 마켓 화면에만 있어 시트 뒤에 가려진다 — 여기서는 아이콘 변화가 피드백
+            withAnimation(.snappy) { store.togglePin(ticker, showToast: false) }
+        } label: {
+            Image(systemName: pinned ? "pin.fill" : "pin")
+                .font(.system(size: 14, weight: .semibold))
+                .foregroundStyle(pinned ? Theme.accent : Color(uiColor: .tertiaryLabel))
+                .frame(width: 32, height: 32)
+                .background(pinned ? Theme.accent.opacity(0.10) : Color(uiColor: .tertiarySystemFill), in: Circle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityIdentifier("chart.pin")
+        .accessibilityLabel(pinned ? lang.t("고정 해제", "Unpin") : lang.t("맨 위에 고정", "Pin to top"))
+    }
+}
