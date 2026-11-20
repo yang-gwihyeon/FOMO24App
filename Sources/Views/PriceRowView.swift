@@ -37,7 +37,6 @@ struct PriceRowView: View {
         // 길게 눌러 실시간 추적 시작/중지
         // 미지원 기기·꺼짐 상태에서는 메뉴 자체를 숨김 (App Review 5.6 회신 내용과 일치 — 비기능 UI 미노출)
         .contextMenu {
-            PinMenuButton(ticker: ticker)
             FavoriteMenuButton(ticker: ticker)
             if LiveActivityManager.shared.isAvailable {
                 let tracking = LiveActivityManager.shared.isTracking(ticker)
@@ -57,25 +56,10 @@ struct PriceRowView: View {
 
     private var header: some View {
         HStack(spacing: 12) {
+            favoriteButton
             VStack(alignment: .leading, spacing: 2) {
-                HStack(spacing: 5) {
-                    Text(Catalog.name(for: ticker, language: lang))
-                        .font(.pd(16, .semibold, relativeTo: .headline))
-                    if store.pinnedTicker == ticker {
-                        Image(systemName: "pin.fill")
-                            .font(.system(size: 11, weight: .semibold))
-                            .foregroundStyle(Theme.accent)
-                            .accessibilityLabel(lang.t("상단 고정됨", "Pinned"))
-                            .accessibilityIdentifier("row.pinned")
-                    }
-                    if store.isFavorite(ticker) {
-                        Image(systemName: "star.fill")
-                            .font(.system(size: 11, weight: .semibold))
-                            .foregroundStyle(.yellow)
-                            .accessibilityLabel(lang.t("즐겨찾기", "Favorite"))
-                            .accessibilityIdentifier("row.favorite")
-                    }
-                }
+                Text(Catalog.name(for: ticker, language: lang))
+                    .font(.pd(16, .semibold, relativeTo: .headline))
                 HStack(spacing: 6) {
                     Text(ticker)
                         .font(.pd(11, .medium, relativeTo: .caption2))
@@ -95,6 +79,26 @@ struct PriceRowView: View {
             trackButton
             quickAddButton
         }
+    }
+
+    /// 즐겨찾기 별 — 스와이프·길게 누르기만으로는 찾기 어려워 이름 앞에 항상 보이게 둔다.
+    private var favoriteButton: some View {
+        let favorite = store.isFavorite(ticker)
+        return Button {
+            Haptics.tap()
+            Metrics.event(favorite ? "favorite_remove" : "favorite_add", ["ticker": ticker])
+            withAnimation(.snappy) { store.toggleFavorite(ticker) }
+        } label: {
+            Image(systemName: favorite ? "star.fill" : "star")
+                .font(.system(size: 17, weight: .medium))
+                .foregroundStyle(favorite ? Color.yellow : Color(uiColor: .tertiaryLabel))
+                .frame(width: 26, height: 34)
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityIdentifier("row.favorite")
+        .accessibilityLabel(favorite ? lang.t("즐겨찾기 해제", "Remove favorite") : lang.t("즐겨찾기", "Favorite"))
+        .accessibilityAddTraits(favorite ? .isSelected : [])
     }
 
     /// 차트 버튼 — 행 탭으로도 열리지만 "누르면 차트가 나온다"는 단서가 없어 아이콘으로 드러낸다.
@@ -234,29 +238,9 @@ struct PriceRowView: View {
     }
 }
 
-/// 상단 고정 토글 — 길게 누르기 메뉴와 스와이프(DashboardView)에서 같이 쓴다.
+/// 즐겨찾기 토글 — 길게 누르기 메뉴와 스와이프(DashboardView)에서 같이 쓴다.
 /// 독립된 뷰인 이유: 스와이프 액션은 행 바깥에서 만들어져, 행의 계산 프로퍼티로 두면
 /// 환경 객체(PriceStore)가 아직 없는 상태에서 읽혀 크래시가 난다.
-struct PinMenuButton: View {
-    let ticker: String
-    @Environment(PriceStore.self) private var store
-
-    var body: some View {
-        let pinned = store.pinnedTicker == ticker
-        let lang = store.appLanguage
-        Button {
-            Haptics.tap()
-            Metrics.event(pinned ? "pin_clear" : "pin_set", ["ticker": ticker])
-            withAnimation(.snappy) { store.togglePin(ticker) }
-        } label: {
-            Label(pinned ? lang.t("고정 해제", "Unpin") : lang.t("맨 위에 고정", "Pin to top"),
-                  systemImage: pinned ? "pin.slash" : "pin")
-        }
-    }
-}
-
-/// 즐겨찾기 토글 — 길게 누르기 메뉴와 스와이프(DashboardView)에서 같이 쓴다.
-/// 독립된 뷰인 이유는 PinMenuButton과 같다 (스와이프 액션은 행 바깥에서 만들어진다).
 struct FavoriteMenuButton: View {
     let ticker: String
     @Environment(PriceStore.self) private var store

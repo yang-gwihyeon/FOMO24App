@@ -26,7 +26,6 @@ struct DashboardView: View {
         }
         .overlay(alignment: .bottom) { toastView }
         .animation(.snappy, value: store.toast)
-        .animation(.snappy, value: store.pinnedTicker)
         .animation(.snappy, value: store.favoriteTickers)
         .sheet(item: $chartTarget) { target in
             PriceChartSheet(target: target).environment(store)
@@ -95,11 +94,7 @@ struct DashboardView: View {
             List {
                 ForEach(store.displayedTickers, id: \.self) { ticker in
                     PriceRowView(ticker: ticker, onOpenChart: { chartTarget = ChartTarget(ticker: ticker) })
-                        // 오른쪽으로 밀어서 맨 위에 고정 (길게 누르기 메뉴에도 같은 항목)
-                        .swipeActions(edge: .leading, allowsFullSwipe: true) {
-                            PinMenuButton(ticker: ticker).tint(Theme.accent)
-                        }
-                        // 왼쪽으로 밀어서 즐겨찾기 추가/해제
+                        // 왼쪽으로 밀어서 즐겨찾기 추가/해제 (행의 별 버튼·길게 누르기 메뉴와 같은 동작)
                         .swipeActions(edge: .trailing, allowsFullSwipe: true) {
                             FavoriteMenuButton(ticker: ticker).tint(.yellow)
                         }
@@ -204,8 +199,8 @@ private struct FavoritesEmptyView: View {
                 .foregroundStyle(.tertiary)
             Text(lang.t("아직 즐겨찾기가 없어요", "No favorites yet"))
                 .font(.pd(16, .semibold, relativeTo: .headline))
-            Text(lang.t("종목을 왼쪽으로 밀거나 길게 눌러 추가하세요",
-                        "Swipe a row left or long-press to add one"))
+            Text(lang.t("종목 이름 앞의 ☆를 눌러 추가하세요",
+                        "Tap the ☆ next to a name to add one"))
                 .font(.pd(13, .regular, relativeTo: .subheadline))
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)

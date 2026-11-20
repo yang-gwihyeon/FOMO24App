@@ -180,29 +180,29 @@ struct ChartFailedView: View {
     }
 }
 
-/// 이 종목을 마켓 목록 맨 위에 고정 — 목록에서는 길게 누르기·스와이프라 차트에서도 바로 되게.
-struct ChartPinButton: View {
+/// 차트를 보다가 바로 즐겨찾기에 넣고 뺄 수 있게 — 목록의 별 버튼과 같은 동작.
+struct ChartFavoriteButton: View {
     let ticker: String
     @Environment(PriceStore.self) private var store
 
     var body: some View {
-        let pinned = store.pinnedTicker == ticker
+        let favorite = store.isFavorite(ticker)
         let lang = store.appLanguage
         Button {
             Haptics.tap()
-            Metrics.event(pinned ? "pin_clear" : "pin_set", ["ticker": ticker])
+            Metrics.event(favorite ? "favorite_remove" : "favorite_add", ["ticker": ticker])
             // 토스트는 마켓 화면에만 있어 시트 뒤에 가려진다 — 여기서는 아이콘 변화가 피드백
-            withAnimation(.snappy) { store.togglePin(ticker, showToast: false) }
+            withAnimation(.snappy) { store.toggleFavorite(ticker, showToast: false) }
         } label: {
-            Image(systemName: pinned ? "pin.fill" : "pin")
+            Image(systemName: favorite ? "star.fill" : "star")
                 .font(.system(size: 14, weight: .semibold))
-                .foregroundStyle(pinned ? Theme.accent : Color(uiColor: .tertiaryLabel))
+                .foregroundStyle(favorite ? Color.yellow : Color(uiColor: .tertiaryLabel))
                 .frame(width: 32, height: 32)
-                .background(pinned ? Theme.accent.opacity(0.10) : Color(uiColor: .tertiarySystemFill), in: Circle())
+                .background(favorite ? Color.yellow.opacity(0.15) : Color(uiColor: .tertiarySystemFill), in: Circle())
         }
         .buttonStyle(.plain)
-        .accessibilityIdentifier("chart.pin")
-        .accessibilityLabel(pinned ? lang.t("고정 해제", "Unpin") : lang.t("맨 위에 고정", "Pin to top"))
+        .accessibilityIdentifier("chart.favorite")
+        .accessibilityLabel(favorite ? lang.t("즐겨찾기 해제", "Remove favorite") : lang.t("즐겨찾기", "Favorite"))
     }
 }
 
