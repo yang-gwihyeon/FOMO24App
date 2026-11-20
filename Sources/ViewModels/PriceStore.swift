@@ -66,20 +66,6 @@ final class PriceStore {
         }
     }
 
-    /// 마켓 목록 맨 위에 고정한 종목 (1개). 정렬을 바꿔도 항상 첫 줄. UserDefaults에 저장.
-    var pinnedTicker: String? = UserDefaults.standard.string(forKey: "pinnedTicker") {
-        didSet { UserDefaults.standard.set(pinnedTicker, forKey: "pinnedTicker") }
-    }
-
-    /// 고정 토글 — 이미 고정된 종목이면 해제, 아니면 이 종목으로 교체.
-    func togglePin(_ ticker: String, showToast: Bool = true) {
-        let pinning = pinnedTicker != ticker
-        pinnedTicker = pinning ? ticker : nil
-        guard showToast else { return }
-        toast = pinning ? appLanguage.t("맨 위에 고정했어요", "Pinned to top")
-                        : appLanguage.t("고정을 해제했어요", "Unpinned")
-    }
-
     /// 즐겨찾기 종목 (여러 개). 마켓 "즐겨찾기" 탭에 모아 보여준다. UserDefaults에 저장.
     private(set) var favoriteTickers: Set<String> =
         Set(UserDefaults.standard.stringArray(forKey: "favoriteTickers") ?? []) {
@@ -88,9 +74,10 @@ final class PriceStore {
 
     func isFavorite(_ ticker: String) -> Bool { favoriteTickers.contains(ticker) }
 
-    func toggleFavorite(_ ticker: String) {
+    func toggleFavorite(_ ticker: String, showToast: Bool = true) {
         let adding = !favoriteTickers.contains(ticker)
         if adding { favoriteTickers.insert(ticker) } else { favoriteTickers.remove(ticker) }
+        guard showToast else { return }
         toast = adding ? appLanguage.t("즐겨찾기에 추가했어요", "Added to favorites")
                        : appLanguage.t("즐겨찾기에서 뺐어요", "Removed from favorites")
     }
@@ -112,6 +99,11 @@ final class PriceStore {
 
     init(injected: (PriceService & FXProvider)? = nil) {
         self.injected = injected
+        // 1.7 이하의 "상단 고정"(1종목)은 즐겨찾기로 합쳤다 — 고정해 둔 종목을 즐겨찾기로 옮기고 옛 키는 지운다.
+        if let pinned = UserDefaults.standard.string(forKey: "pinnedTicker") {
+            favoriteTickers.insert(pinned)
+            UserDefaults.standard.removeObject(forKey: "pinnedTicker")
+        }
         // 즐겨찾기가 있으면 그 탭으로 시작. 없으면 빈 화면 대신 전체 목록부터 보여준다.
         if !favoriteTickers.isEmpty { marketTab = .favorites }
     }
@@ -201,11 +193,9 @@ final class PriceStore {
 
     // MARK: - 정렬 (대표 시세 기준)
 
-    /// 정렬 → 탭 필터 → 상단 고정이 적용된 표시 종목 목록.
+    /// 정렬 → 탭 필터가 적용된 표시 종목 목록.
     var displayedTickers: [String] {
-        let filtered = marketTab.filter(sortedTickers, favorites: favoriteTickers,
-                                        category: Catalog.category(for:))
-        return PinnedOrder.apply(filtered, pinned: pinnedTicker)
+        marketTab.filter(sortedTickers, favorites: favoriteTickers, category: Catalog.category(for:))
     }
 
     private var sortedTickers: [String] {
