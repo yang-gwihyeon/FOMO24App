@@ -80,6 +80,24 @@ final class PriceStore {
                         : appLanguage.t("고정을 해제했어요", "Unpinned")
     }
 
+    /// 즐겨찾기 종목 (여러 개). 마켓 "즐겨찾기" 탭에 모아 보여준다. UserDefaults에 저장.
+    private(set) var favoriteTickers: Set<String> =
+        Set(UserDefaults.standard.stringArray(forKey: "favoriteTickers") ?? []) {
+        didSet { UserDefaults.standard.set(favoriteTickers.sorted(), forKey: "favoriteTickers") }
+    }
+
+    func isFavorite(_ ticker: String) -> Bool { favoriteTickers.contains(ticker) }
+
+    func toggleFavorite(_ ticker: String) {
+        let adding = !favoriteTickers.contains(ticker)
+        if adding { favoriteTickers.insert(ticker) } else { favoriteTickers.remove(ticker) }
+        toast = adding ? appLanguage.t("즐겨찾기에 추가했어요", "Added to favorites")
+                       : appLanguage.t("즐겨찾기에서 뺐어요", "Removed from favorites")
+    }
+
+    /// 마켓 상단 탭 (즐겨찾기 · 전체 · 분류). 저장하지 않고 실행마다 init에서 정한다.
+    var marketTab: MarketTab = .all
+
     /// 토스트 메시지 (FOMO 추가 확인 등). 표시 후 nil로 초기화.
     var toast: String?
 
@@ -94,6 +112,8 @@ final class PriceStore {
 
     init(injected: (PriceService & FXProvider)? = nil) {
         self.injected = injected
+        // 즐겨찾기가 있으면 그 탭으로 시작. 없으면 빈 화면 대신 전체 목록부터 보여준다.
+        if !favoriteTickers.isEmpty { marketTab = .favorites }
     }
 
     // MARK: - 갱신
@@ -181,9 +201,11 @@ final class PriceStore {
 
     // MARK: - 정렬 (대표 시세 기준)
 
-    /// 정렬이 적용된 표시 종목 목록.
+    /// 정렬 → 탭 필터 → 상단 고정이 적용된 표시 종목 목록.
     var displayedTickers: [String] {
-        PinnedOrder.apply(sortedTickers, pinned: pinnedTicker)
+        let filtered = marketTab.filter(sortedTickers, favorites: favoriteTickers,
+                                        category: Catalog.category(for:))
+        return PinnedOrder.apply(filtered, pinned: pinnedTicker)
     }
 
     private var sortedTickers: [String] {

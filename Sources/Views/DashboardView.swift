@@ -27,6 +27,7 @@ struct DashboardView: View {
         .overlay(alignment: .bottom) { toastView }
         .animation(.snappy, value: store.toast)
         .animation(.snappy, value: store.pinnedTicker)
+        .animation(.snappy, value: store.favoriteTickers)
         .sheet(item: $chartTarget) { target in
             PriceChartSheet(target: target).environment(store)
         }
@@ -84,6 +85,7 @@ struct DashboardView: View {
         // 풀투리프레시는 리스트에만 → 스피너가 필터 바와 주식 정보 사이에 표시됨.
         VStack(spacing: 0) {
             HeaderView()
+            MarketTabBar()
             CurrencyPicker()
                 .padding(.top, 12)
             SortBar()
@@ -96,6 +98,10 @@ struct DashboardView: View {
                         // 오른쪽으로 밀어서 맨 위에 고정 (길게 누르기 메뉴에도 같은 항목)
                         .swipeActions(edge: .leading, allowsFullSwipe: true) {
                             PinMenuButton(ticker: ticker).tint(Theme.accent)
+                        }
+                        // 왼쪽으로 밀어서 즐겨찾기 추가/해제
+                        .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                            FavoriteMenuButton(ticker: ticker).tint(.yellow)
                         }
                         .listRowInsets(EdgeInsets())
                         .listRowBackground(Color(uiColor: .systemBackground))
@@ -110,6 +116,11 @@ struct DashboardView: View {
                 await store.refresh()               // 당겨서 새로고침 (유일한 수동 갱신)
                 // 수동 갱신 시 다이나믹 아일랜드 안내 다시 노출
                 withAnimation(.snappy) { islandTipDismissed = false }
+            }
+            .overlay {
+                if store.marketTab == .favorites && store.displayedTickers.isEmpty {
+                    FavoritesEmptyView()
+                }
             }
             .overlay(alignment: .topTrailing) {
                 if showIslandTip {
@@ -127,6 +138,93 @@ struct DashboardView: View {
         }
     }
 
+}
+
+// MARK: - 탭 (즐겨찾기 · 전체 · 분류)
+
+/// 마켓 상단 탭. 통화 칩(캡슐)과 헷갈리지 않게 밑줄형 텍스트 탭으로 그린다.
+private struct MarketTabBar: View {
+    @Environment(PriceStore.self) private var store
+
+    var body: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 20) {
+                ForEach(MarketTab.allTabs, id: \.self) { tab in
+                    tabButton(tab)
+                }
+            }
+            .padding(.horizontal, 20)
+        }
+        .overlay(alignment: .bottom) { Divider() }
+    }
+
+    private func tabButton(_ tab: MarketTab) -> some View {
+        let selected = store.marketTab == tab
+        return Button {
+            guard !selected else { return }
+            Haptics.tap()
+            // withAnimation 금지 — 통화 전환과 같은 이유 (리스트 전체가 애니메이션 diff 대상이 된다).
+            store.marketTab = tab
+            Metrics.event("market_tab", ["tab": tab.id])
+        } label: {
+            HStack(spacing: 4) {
+                if tab == .favorites {
+                    Image(systemName: "star.fill")
+                        .font(.system(size: 11, weight: .semibold))
+                        .foregroundStyle(selected ? .yellow : Color(uiColor: .tertiaryLabel))
+                }
+                Text(tab.label(store.appLanguage))
+                    .font(.pd(15, selected ? .bold : .medium, relativeTo: .subheadline))
+                    .foregroundStyle(selected ? .primary : .secondary)
+                    .fixedSize()
+            }
+            .padding(.vertical, 10)
+            .overlay(alignment: .bottom) {
+                Rectangle()
+                    .fill(selected ? Color.primary : .clear)
+                    .frame(height: 2)
+            }
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityAddTraits(selected ? .isSelected : [])
+        .accessibilityIdentifier("market.tab.\(tab.id)")
+    }
+}
+
+/// 즐겨찾기 탭이 비었을 때 — 추가 방법 안내 + 전체 목록으로 가는 버튼.
+private struct FavoritesEmptyView: View {
+    @Environment(PriceStore.self) private var store
+
+    var body: some View {
+        let lang = store.appLanguage
+        VStack(spacing: 14) {
+            Image(systemName: "star")
+                .font(.system(size: 36))
+                .foregroundStyle(.tertiary)
+            Text(lang.t("아직 즐겨찾기가 없어요", "No favorites yet"))
+                .font(.pd(16, .semibold, relativeTo: .headline))
+            Text(lang.t("종목을 왼쪽으로 밀거나 길게 눌러 추가하세요",
+                        "Swipe a row left or long-press to add one"))
+                .font(.pd(13, .regular, relativeTo: .subheadline))
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+            Button {
+                Haptics.tap()
+                store.marketTab = .all
+            } label: {
+                Text(lang.t("전체 종목 보기", "Browse all"))
+                    .font(.pd(14, .semibold, relativeTo: .subheadline))
+                    .padding(.horizontal, 22)
+                    .padding(.vertical, 10)
+                    .background(Theme.accent, in: Capsule())
+                    .foregroundStyle(.white)
+            }
+            .buttonStyle(.plain)
+            .accessibilityIdentifier("favorites.browseAll")
+        }
+        .padding(40)
+    }
 }
 
 // MARK: - 정렬 (버튼 → 바텀시트)
