@@ -38,6 +38,7 @@ struct PriceRowView: View {
         // 미지원 기기·꺼짐 상태에서는 메뉴 자체를 숨김 (App Review 5.6 회신 내용과 일치 — 비기능 UI 미노출)
         .contextMenu {
             PinMenuButton(ticker: ticker)
+            FavoriteMenuButton(ticker: ticker)
             if LiveActivityManager.shared.isAvailable {
                 let tracking = LiveActivityManager.shared.isTracking(ticker)
                 Button {
@@ -66,6 +67,13 @@ struct PriceRowView: View {
                             .foregroundStyle(Theme.accent)
                             .accessibilityLabel(lang.t("상단 고정됨", "Pinned"))
                             .accessibilityIdentifier("row.pinned")
+                    }
+                    if store.isFavorite(ticker) {
+                        Image(systemName: "star.fill")
+                            .font(.system(size: 11, weight: .semibold))
+                            .foregroundStyle(.yellow)
+                            .accessibilityLabel(lang.t("즐겨찾기", "Favorite"))
+                            .accessibilityIdentifier("row.favorite")
                     }
                 }
                 HStack(spacing: 6) {
@@ -243,6 +251,26 @@ struct PinMenuButton: View {
         } label: {
             Label(pinned ? lang.t("고정 해제", "Unpin") : lang.t("맨 위에 고정", "Pin to top"),
                   systemImage: pinned ? "pin.slash" : "pin")
+        }
+    }
+}
+
+/// 즐겨찾기 토글 — 길게 누르기 메뉴와 스와이프(DashboardView)에서 같이 쓴다.
+/// 독립된 뷰인 이유는 PinMenuButton과 같다 (스와이프 액션은 행 바깥에서 만들어진다).
+struct FavoriteMenuButton: View {
+    let ticker: String
+    @Environment(PriceStore.self) private var store
+
+    var body: some View {
+        let favorite = store.isFavorite(ticker)
+        let lang = store.appLanguage
+        Button {
+            Haptics.tap()
+            Metrics.event(favorite ? "favorite_remove" : "favorite_add", ["ticker": ticker])
+            withAnimation(.snappy) { store.toggleFavorite(ticker) }
+        } label: {
+            Label(favorite ? lang.t("즐겨찾기 해제", "Remove favorite") : lang.t("즐겨찾기", "Favorite"),
+                  systemImage: favorite ? "star.slash" : "star")
         }
     }
 }

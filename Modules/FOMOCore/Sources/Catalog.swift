@@ -13,9 +13,11 @@ public enum Catalog {
         public let ja: String
         public let bybit: String?        // Bybit spot 심볼 (예: "NVDAXUSDT")
         public let bitget: String?       // Bitget USDT-futures 심볼 (예: "NVDAUSDT")
+        public let category: MarketCategory?   // 마켓 탭 분류 (없으면 "전체" 탭에만 표시)
 
+        /// `category`를 생략하면 앱 내장 분류표(`MarketCategory.builtin`)에서 찾는다.
         public init(ticker: String, domain: String, en: String, ko: String, ja: String,
-                    bybit: String?, bitget: String?) {
+                    bybit: String?, bitget: String?, category: MarketCategory? = nil) {
             self.ticker = ticker
             self.domain = domain
             self.en = en
@@ -23,6 +25,7 @@ public enum Catalog {
             self.ja = ja
             self.bybit = bybit
             self.bitget = bitget
+            self.category = category ?? MarketCategory.builtin(for: ticker)
         }
 
         /// Firestore `config/catalog`의 entries 항목 파싱. 필수 필드 없으면 nil.
@@ -35,7 +38,8 @@ public enum Catalog {
                       ko: remote["ko"] as? String ?? en,
                       ja: remote["ja"] as? String ?? en,
                       bybit: remote["bybit"] as? String,
-                      bitget: remote["bitget"] as? String)
+                      bitget: remote["bitget"] as? String,
+                      category: (remote["category"] as? String).flatMap(MarketCategory.init(rawValue:)))
         }
 
         public func name(_ language: AppLanguage) -> String {
@@ -105,6 +109,10 @@ public enum Catalog {
     public static func logoURL(for ticker: String) -> URL? {
         guard let domain = (stateLock.withLock { _byTicker[ticker] })?.domain, !domain.isEmpty else { return nil }
         return URL(string: "https://www.google.com/s2/favicons?domain=\(domain)&sz=128")
+    }
+
+    public static func category(for ticker: String) -> MarketCategory? {
+        (stateLock.withLock { _byTicker[ticker] })?.category
     }
 
     public static func order(of ticker: String) -> Int {
